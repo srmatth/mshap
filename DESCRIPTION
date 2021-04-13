@@ -17,3 +17,10 @@ Imports:
     magrittr (>= 1.5),
     purrr (>= 0.3.4),
     dplyr (>= 1.0.4)
+Suggests: 
+    rmarkdown,
+    knitr,
+    ggplot2,
+    ggbeeswarm,
+    tidyr
+VignetteBuilder: knitr

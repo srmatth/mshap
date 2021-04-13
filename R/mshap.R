@@ -39,6 +39,19 @@ mshap <- function(shap_1, shap_2, ex_1, ex_2) {
     ex_2 <- ex_2[1]
   }
   
+  if ("matrix" %in% class(shap_1)) {
+    shap_1 <- as.data.frame(shap_1)
+  }
+  if ("matrix" %in% class(shap_2)) {
+    shap_2 <- as.data.frame(shap_2)
+  }
+  if ("array" %in% class(ex_1)) {
+    ex_1 <- c(ex_1)
+  }
+  if ("array" %in% class(ex_2)) {
+    ex_2 <- c(ex_2)
+  }
+  
   d <- purrr::map_dfc(
     .x = 1:ncol(shap_1),
     .f = ~{
@@ -48,11 +61,15 @@ mshap <- function(shap_1, shap_2, ex_1, ex_2) {
         ((shap_1 %>% rowSums()) * (shap_2 %>% dplyr::pull(.x))) / 2
     }
   ) %>%
-    magrittr::set_colnames(colnames(shap_1))
+    magrittr::set_colnames(colnames(shap_1)) %>%
+    suppressMessages()
   
-  expected_value <- d %>% 
-    rowSums() %>% 
-    mean()
+  preds_1 <- rowSums(shap_1 %>% dplyr::mutate(ex_val = ex_1))
+  preds_2 <- rowSums(shap_2 %>% dplyr::mutate(ex_val = ex_2))
+  
+  preds_3 <- preds_1 * preds_2
+  
+  expected_value <- mean(preds_3)
   
   tot_s <- rowSums(abs(d))
   shap_vals <- purrr::map_dfc(
