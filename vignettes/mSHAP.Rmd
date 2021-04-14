@@ -24,7 +24,7 @@ It will focus heavily on insurance ratemaking, and will be based on the "AutoCla
 devtools::load_all()
 library(reticulate)
 library(insuranceData)
-data("AutoClaims")
+library(dplyr)
 data("dataOhlsson")
 ```
 
@@ -150,9 +150,131 @@ observation_plot(
 
 ## Use Case on Ohlsson Data
 
-### Step 1: Predict the Pay Out
+We will now work through a little bit of a different use case, one specific to the insurance industry.
+In it, we will create a two-part model to predict the ultimate cost of the policy by using the first part of the model to predict the severity and the second part of the model to predict the frequency.
+Our frequency model will be a multinomial model, which will allow us to demonstrate using mSHAP with a multinomial output.
+
+### Step 1: Predict the Severity
+
+Our first model will predict the severity, or the cost per claim.
+
+```{r}
+dataOhlsson %>% colnames()
+```
+
+We will filter for only policies with a claim, then calculate severity, and because these colnames are not in english, we will rename them. Summaries of each variables are given as well.
+
+```{r}
+sev <- dataOhlsson %>%
+  filter(antskad > 0) %>%
+  mutate(severity = skadkost / antskad) %>%
+  select(
+    severity,
+    age = agarald,
+    gender = kon,
+    geographic_zone = zon,
+    vehicle_age = fordald
+  )
+summary(sev$severity)
+summary(sev$exposure)
+summary(sev$age)
+summary(sev$vehicle_age)
+sev %>% count(gender)
+sev %>% count(geographic_zone)
+```
+
+We will now use python to create a model and shap explainer to predict the severity after further refining the data we need in R.
+
+```{r}
+X <- sev %>%
+  mutate(
+    is_male = gender == "M"
+  ) %>%
+  select(-severity, -gender)
+severity <- sev$severity
+```
+
+
+```{python}
+mod_dat = r.X
+sev = r.severity
+
+sev_mod = sk.RandomForestRegressor(n_estimators = 100, max_depth = 10, max_features = 2)
+sev_mod.fit(mod_dat, sev)
+
+sev_preds = sev_mod.predict(mod_dat)
+
+sev_ex = shap.Explainer(sev_mod)
+sev_expected_val = sev_ex.expected_value
+sev_preds_explained = sev_ex.shap_values(mod_dat)
+```
+
 
 ### Step 2: Predict the Freequency
+
+The next step is to create a model that predicts the frequency of a claim.  In this case, the possible values are 0, 1, and 2.
+Technically, it is possible to have more than 2 claims, but we will consider the probability so small as to be negligble.
+In order to create this model, we will use the same variables as before, but weight by the exposure column.
+Furthermore, we will downsample the rows with 0 claims while upsampling the rows with 1 and 2 claims, so we have a balanced data set.
+
+```{r}
+freq_unbalanced <- dataOhlsson %>%
+  select(
+    claims = antskad,
+    exposure = duration,
+    age = agarald,
+    gender = kon,
+    geographic_zone = zon,
+    vehicle_age = fordald
+  )
+freq_0 = freq_unbalanced %>%
+  filter(claims == 0) %>%
+  sample_n(8000)
+freq_1 = freq_unbalanced %>%
+  filter(claims == 1) %>%
+  sample_n(8000, replace = TRUE)
+freq_2 = freq_unbalanced %>%
+  filter(claims == 2) %>%
+  sample_n(8000, replace = TRUE)
+
+freq <- freq_0 %>% 
+  bind_rows(freq_1) %>%
+  bind_rows(freq_2) %>%
+  mutate(claims = as.factor(claims))
+```
+
+Now to python for the model after creating our model data and response objects.
+Note that here we will also pass the whole dataset to python for predicting on and calculating SHAP values.
+
+```{r}
+X <- freq %>%
+  mutate(
+    is_male = gender == "M"
+  ) %>%
+  select(-gender, -claims)
+claims = freq$claims
+actual_dat <- freq_unbalanced %>%
+  mutate(
+    is_male = gender == "M"
+  ) %>%
+  select(-gender, -claims)
+```
+
+```{python}
+mod_dat = r.X
+claims = r.claims
+actual_dat = r.actual_dat
+
+freq_mod = sk.RandomForestClassifier(n_estimators = 100, max_depth = 10, max_features = 2)
+freq_mod.fit(mod_dat, claims)
+
+freq_preds = sev_mod.predict(actual_dat)
+
+freq_ex = shap.Explainer(freq_mod)
+freq_expected_val = freq_ex.expected_value
+freq_preds_explained = freq_ex.shap_values(mod_dat)
+```
+
 
 ### Step 3: Combine the Models
 
