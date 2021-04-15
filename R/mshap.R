@@ -13,75 +13,54 @@
 #'
 #' @return a list containing the multiplied SHAP values and the expected value
 #' @export
-mshap <- function(shap_1, shap_2, ex_1, ex_2) {
-  ## Error Checking
-  # check the dimensions of the SHAP values (they need to be the same)
-  if (min(dim(shap_1) == dim(shap_2)) == FALSE) {
-    stop("`shap1` and `shap2` must have the same dimensions")
-  }
-  # Check the column types of shap_1 and shap_2
-  shap_1_class <- purrr::map_chr(shap_1, class)
-  shap_2_class <- purrr::map_chr(shap_2, class)
-  if (min(c(shap_1_class, shap_2_class) %in% c("integer", "numeric")) == FALSE) {
-    stop("`shap1` and `shap2` must be only composed of numerical values")
-  }
-  # Check the type of the input on the expected values
-  if (!is.numeric(ex_1) | !is.numeric(ex_2)) {
-    stop("`ex_1` and `ex_2` must be numeric")
-  }
-  # Check the length of the expected value inputs
-  if (length(ex_1) > 1) {
-    warning("`ex1` has a length greater than 1, only using first element")
-    ex_1 <- ex_1[1]
-  }
-  if (length(ex_2) > 1) {
-    warning("`ex2` has a length greater than 1, only using first element")
-    ex_2 <- ex_2[1]
-  }
+mshap <- function(
+  shap_1, 
+  shap_2, 
+  ex_1, 
+  ex_2,
+  shap_1_names = NULL,
+  shap_2_names = NULL
+) {
   
-  if ("matrix" %in% class(shap_1)) {
-    shap_1 <- as.data.frame(shap_1)
-  }
-  if ("matrix" %in% class(shap_2)) {
-    shap_2 <- as.data.frame(shap_2)
-  }
-  if ("array" %in% class(ex_1)) {
-    ex_1 <- c(ex_1)
-  }
-  if ("array" %in% class(ex_2)) {
-    ex_2 <- c(ex_2)
-  }
-  
-  d <- purrr::map_dfc(
-    .x = 1:ncol(shap_1),
-    .f = ~{
-      (shap_1 %>% dplyr::pull(.x)) * c(ex_2) + 
-        (shap_2 %>% dplyr::pull(.x)) * c(ex_1) + 
-        ((shap_1 %>% dplyr::pull(.x)) * (shap_2 %>% rowSums())) / 2 +
-        ((shap_1 %>% rowSums()) * (shap_2 %>% dplyr::pull(.x))) / 2
+  if ("list" %in% class(shap_1) & "list" %in% class(shap_2)) {
+    stop("`mshap::mshap()` is not currently set up to handle multiple matrices in each `shap_*` argument.  Did you accidentally wrap a matrix in a list?")
+  } else if ("list" %in% class(shap_1) | "list" %in% class(shap_2)) {
+    if ("list" %in% class(shap_1)) {
+      main <- shap_1
+      main_ex <- ex_1
+      secondary <- shap_2
+      sec_ex <- ex_2
+    } else {
+      main <- shap_2
+      main_ex <- ex_2
+      secondary <- shap_1
+      sec_ex <- ex_1
     }
-  ) %>%
-    magrittr::set_colnames(colnames(shap_1)) %>%
-    suppressMessages()
-  
-  preds_1 <- rowSums(shap_1 %>% dplyr::mutate(ex_val = ex_1))
-  preds_2 <- rowSums(shap_2 %>% dplyr::mutate(ex_val = ex_2))
-  
-  preds_3 <- preds_1 * preds_2
-  
-  expected_value <- mean(preds_3)
-  
-  tot_s <- rowSums(abs(d))
-  shap_vals <- purrr::map_dfc(
-    .x = d,
-    .f = ~{
-      .x + (abs(.x) / tot_s) * (ex_1 * ex_2 - expected_value)
-    }
-  )
-  
-  # return a list with what we want
-  list(
-    shap_vals = shap_vals,
-    expected_value = expected_value
-  )
+    
+    l <- purrr::map2(
+      .x = main,
+      .y = ex_1,
+      .f = ~{
+        multiply_shap(
+          shap_1 = .x,
+          shap_2 = secondary,
+          ex_1 = .y,
+          ex_2 = sec_ex,
+          shap_1_names = shap_1_names,
+          shap_2_names = shap_2_names
+        )
+      }
+    )
+    
+  } else {
+    l <- multiply_shap(
+      shap_1,
+      shap_2,
+      ex_1,
+      ex_2,
+      shap_1_names,
+      shap_2_names
+    )
+  }
+  return(l)
 }

@@ -1,4 +1,8 @@
 summary_plot <- function(variable_values, shap_values, names = NULL) {
+  if (is.null(names)) {
+    names <- colnames(variable_values)
+  }
+  
   variable_values <- variable_values %>%
     dplyr::mutate(
       dplyr::across(dplyr::everything(), .fns = ~((.x - min(.x)) / (max(.x) - min(.x))))
@@ -8,10 +12,6 @@ summary_plot <- function(variable_values, shap_values, names = NULL) {
       values_to = "var_val",
       cols = colnames(.)
     )
-  
-  if (is.null(names)) {
-    names <- colnames(variable_values)
-  }
   
   important_vars <- shap_values %>%
     magrittr::set_colnames(names) %>%

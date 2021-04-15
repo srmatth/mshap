@@ -22,10 +22,12 @@ It will focus heavily on insurance ratemaking, and will be based on the "AutoCla
 ```{r setup-r}
 # library(mshap)
 devtools::load_all()
-library(reticulate)
-library(insuranceData)
-library(dplyr)
-data("dataOhlsson")
+library(reticulate) # for accessing python objects from r and vice-versa
+library(insuranceData) # for the data
+library(dplyr) # for the data manipulation
+library(purrr) # for mapping over lists returned from python
+library(caret) # for train/test split
+data("dataOhlsson") # the data we will use for the second example
 ```
 
 In addition to the R libraries included above, we will need the additional python modules for these examples:
@@ -154,132 +156,218 @@ We will now work through a little bit of a different use case, one specific to t
 In it, we will create a two-part model to predict the ultimate cost of the policy by using the first part of the model to predict the severity and the second part of the model to predict the frequency.
 Our frequency model will be a multinomial model, which will allow us to demonstrate using mSHAP with a multinomial output.
 
-### Step 1: Predict the Severity
+### Step 1: Prepare the Data
 
-Our first model will predict the severity, or the cost per claim.
+Let's take a look at the data we will be using.
 
 ```{r}
-dataOhlsson %>% colnames()
+dataOhlsson %>% head()
 ```
 
-We will filter for only policies with a claim, then calculate severity, and because these colnames are not in english, we will rename them. Summaries of each variables are given as well.
+We will first rename the columns, and look at summaries of each of the variables.
+Scikit-learn does not accept non-numeric covariates, so we will also convert the `gender` variable to an `is_male` indicator.
 
 ```{r}
-sev <- dataOhlsson %>%
-  filter(antskad > 0) %>%
+cleaned <- dataOhlsson %>%
   mutate(severity = skadkost / antskad) %>%
   select(
     severity,
-    age = agarald,
-    gender = kon,
-    geographic_zone = zon,
-    vehicle_age = fordald
-  )
-summary(sev$severity)
-summary(sev$exposure)
-summary(sev$age)
-summary(sev$vehicle_age)
-sev %>% count(gender)
-sev %>% count(geographic_zone)
-```
-
-We will now use python to create a model and shap explainer to predict the severity after further refining the data we need in R.
-
-```{r}
-X <- sev %>%
-  mutate(
-    is_male = gender == "M"
-  ) %>%
-  select(-severity, -gender)
-severity <- sev$severity
-```
-
-
-```{python}
-mod_dat = r.X
-sev = r.severity
-
-sev_mod = sk.RandomForestRegressor(n_estimators = 100, max_depth = 10, max_features = 2)
-sev_mod.fit(mod_dat, sev)
-
-sev_preds = sev_mod.predict(mod_dat)
-
-sev_ex = shap.Explainer(sev_mod)
-sev_expected_val = sev_ex.expected_value
-sev_preds_explained = sev_ex.shap_values(mod_dat)
-```
-
-
-### Step 2: Predict the Freequency
-
-The next step is to create a model that predicts the frequency of a claim.  In this case, the possible values are 0, 1, and 2.
-Technically, it is possible to have more than 2 claims, but we will consider the probability so small as to be negligble.
-In order to create this model, we will use the same variables as before, but weight by the exposure column.
-Furthermore, we will downsample the rows with 0 claims while upsampling the rows with 1 and 2 claims, so we have a balanced data set.
-
-```{r}
-freq_unbalanced <- dataOhlsson %>%
-  select(
     claims = antskad,
     exposure = duration,
     age = agarald,
     gender = kon,
     geographic_zone = zon,
     vehicle_age = fordald
-  )
-freq_0 = freq_unbalanced %>%
+  ) %>%
+  mutate(is_male = as.numeric(gender == "M")) %>%
+  select(-gender)
+
+summary(cleaned$severity)
+summary(cleaned$exposure)
+summary(cleaned$age)
+summary(cleaned$vehicle_age)
+cleaned %>% count(is_male)
+cleaned %>% count(geographic_zone)
+```
+
+
+Our next step will be to create a train/test split on the overall data.  This will allow us to train models with the train set while having a holdout set for prediction and explanation.
+We will use 90% of our data to train the model and only 10% to test it, for faster run times on the SHAP explainers.
+
+```{r}
+idx <- createDataPartition(cleaned$claims, p = 0.9, list = FALSE)
+train <- cleaned[idx,]
+test <- cleaned[-idx,]
+```
+
+Now the data for the two models must be created. The first is for the severity model.
+We filter for only policies with a claim to create a severity specific training set.
+Also, we remove the exposure variable, as it should have no bearing on severity
+
+```{r}
+train_sev <- train %>%
+  filter(claims > 0) %>%
+  select(-exposure, -claims)
+```
+
+Next is frequency.
+The data will be used to create a multinomial classification model, and in this case, the possible values are 0, 1, and 2.
+Technically, it is possible to have more than 2 claims, but we will consider the probability so small as to be negligble.
+In order to create this model, we will use the same variables as before, but weight by the exposure column.
+Furthermore, we will downsample the rows with 0 claims while upsampling the rows with 1 and 2 claims, so we have a balanced data set.
+
+```{r}
+freq_0 <- train %>%
   filter(claims == 0) %>%
-  sample_n(8000)
-freq_1 = freq_unbalanced %>%
+  sample_n(8000, replace = TRUE)
+freq_1 <- train %>%
   filter(claims == 1) %>%
   sample_n(8000, replace = TRUE)
-freq_2 = freq_unbalanced %>%
+freq_2 <- train %>%
   filter(claims == 2) %>%
   sample_n(8000, replace = TRUE)
 
-freq <- freq_0 %>% 
+train_freq <- freq_0 %>% 
   bind_rows(freq_1) %>%
   bind_rows(freq_2) %>%
-  mutate(claims = as.factor(claims))
+  mutate(claims = as.factor(claims)) %>%
+  select(-severity)
 ```
 
-Now to python for the model after creating our model data and response objects.
-Note that here we will also pass the whole dataset to python for predicting on and calculating SHAP values.
+To conclude the data preparation step, we will split our data into the predictors and the response, for ease of model fitting in python.
 
 ```{r}
-X <- freq %>%
-  mutate(
-    is_male = gender == "M"
-  ) %>%
-  select(-gender, -claims)
-claims = freq$claims
-actual_dat <- freq_unbalanced %>%
-  mutate(
-    is_male = gender == "M"
-  ) %>%
-  select(-gender, -claims)
+X_sev <- train_sev %>%
+  select(-severity)
+y_sev <- train_sev %>%
+  pull(severity)
+
+X_freq <- train_freq %>%
+  select(-claims)
+y_freq <- train_freq %>%
+  pull(claims)
+```
+
+
+### Step 2: Train the Models
+
+Our first model will predict the severity, or the cost per claim. It will be trained in python.
+
+```{python}
+mod_dat_sev = r.X_sev
+sev = r.y_sev
+
+sev_mod = sk.RandomForestRegressor(n_estimators = 100, max_depth = 10, max_features = 2)
+sev_mod.fit(mod_dat_sev, sev)
+```
+
+
+The next model will predict the frequency and will also be trained in python.
+
+```{python}
+mod_dat_freq = r.X_freq
+claims = r.y_freq
+
+freq_mod = sk.RandomForestClassifier(n_estimators = 100, max_depth = 10, max_features = 2)
+freq_mod.fit(mod_dat_freq, claims)
+```
+
+
+### Step 3: Get Model Predictions
+
+We will now take our test set predict on it with the two created models.  The subsequent model outputs will be multiplied together and then averaged for each row to obtain an expected cost per row.
+
+```{r}
+test_sev <- test %>%
+  select(-exposure, -severity, -claims)
+test_freq <- test %>%
+  select(-severity, -claims)
 ```
 
 ```{python}
-mod_dat = r.X
-claims = r.claims
-actual_dat = r.actual_dat
+test_sev = r.test_sev
+test_freq = r.test_freq
 
-freq_mod = sk.RandomForestClassifier(n_estimators = 100, max_depth = 10, max_features = 2)
-freq_mod.fit(mod_dat, claims)
+preds_sev = sev_mod.predict(test_sev)
+preds_freq = freq_mod.predict_proba(test_freq)
+```
 
-freq_preds = sev_mod.predict(actual_dat)
-
-freq_ex = shap.Explainer(freq_mod)
-freq_expected_val = freq_ex.expected_value
-freq_preds_explained = freq_ex.shap_values(mod_dat)
+```{r}
+preds_sev <- py$preds_sev
+preds_freq <- py$preds_freq %>%
+  as.data.frame()
+expected_values <- map2_dfc(
+  .x = preds_freq,
+  .y = 0:2,
+  .f = ~{
+    .x * .y * preds_sev
+  }
+) %>%
+  rowSums()
 ```
 
 
-### Step 3: Combine the Models
+### Step 4: Explain the Predictions
 
-### Step 4: Apply mSHAP
+With the goal of explaining this "average value" prediction, we will eventually use mSHAP.
+However, it is necessary to first calculate the SHAP values for the two models separately.
+
+```{python}
+sev_ex = shap.Explainer(sev_mod)
+sev_expected_val = sev_ex.expected_value
+sev_preds_explained = sev_ex.shap_values(test_sev)
+
+freq_ex = shap.Explainer(freq_mod)
+freq_expected_val = freq_ex.expected_value
+freq_preds_explained = freq_ex.shap_values(test_freq)
+```
+
+```{r}
+freq_shap <- py$freq_preds_explained
+sev_shap <- py$sev_preds_explained
+```
+
+Note that we can take these raw SHAP values from python and plug them straight into the function with no additional manipulation, but that requires that we specify the arguments `shap_1_names` and `shap_2_names`.
+Recall that our models do not use exactly the same predictors, so specifying the names will alert the algorithm of this and create a column of zeros for all non-matching column names.
+
+Note also that passing in a list as one of the `shap*` arguments will cause a nested list to be returned, instead of the normal list.
+
+```{r}
+mshap_res <- mshap(
+  shap_1 = freq_shap,
+  shap_2 = sev_shap,
+  ex_1 = py$freq_expected_val,
+  ex_2 = py$sev_expected_val,
+  shap_1_names = colnames(test_freq),
+  shap_2_names = colnames(test_sev)
+)
+```
+
+Since we want the expected value, we would like to combine the SHAP values in the same way, multiplying the respective values by 0, 1, and 2.
+This can be done in the following code.
+
+```{r}
+ev_explained <- mshap_res[[1]]$shap_vals * 0 + 
+  mshap_res[[2]]$shap_vals * 1 + 
+  mshap_res[[3]]$shap_vals * 2
+
+shap_expected_values <- mshap_res[[1]]$expected_value * 0+ 
+  mshap_res[[2]]$expected_value * 1 + 
+  mshap_res[[3]]$expected_value * 2
+```
 
 ### Step 5: Visualize the Results
 
+```{r, fig.width=5, fig.height=5,fig.align='center'}
+summary_plot(variable_values = test_freq, shap_values = ev_explained)
+```
+
+
+```{r, fig.width=5, fig.height=5,fig.align='center'}
+observation_plot(variable_values = test_freq[1,], shap_values = ev_explained[1,], expected_value = shap_expected_values[1])
+```
+
+
 ## Conclusion
+
+Overall, mSHAP can be a great help when working with models where the ultimate prediction is the product of two different models, as is the case in the classic two-part model in the insurance industry.
