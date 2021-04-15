@@ -1,6 +1,6 @@
 Package: mshap
 Title: Compute Multiplicative SHAP values
-Version: 0.0.0.9002
+Version: 0.0.0.9003
 Authors@R: 
     person(given = "Spencer",
            family = "Matthews",
@@ -16,7 +16,8 @@ RoxygenNote: 7.1.0
 Imports: 
     magrittr (>= 1.5),
     purrr (>= 0.3.4),
-    dplyr (>= 1.0.4)
+    dplyr (>= 1.0.4),
+    stringr
 Suggests: 
     rmarkdown,
     knitr,

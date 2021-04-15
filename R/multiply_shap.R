@@ -1,3 +1,16 @@
+#' Multiply SHAP
+#' 
+#' A Helper Function for the mSHAP function
+#'
+#' @param shap_1,shap2 matrices or data frames of SHAP values to be multiplied
+#' @param ex_1,ex_2 the expected values of the models that correspond to the 
+#'   shap values
+#' @param shap_1_names,shap_2_names the names of the variables in the data 
+#'   that was passed as shap values
+#'
+#' @return a list containing a data frame of SHAP values and the expected value
+#' 
+#' @noRd
 multiply_shap <- function(
   shap_1, 
   shap_2, 

@@ -2,4 +2,6 @@
 
 export("%>%")
 export(mshap)
+export(observation_plot)
+export(summary_plot)
 importFrom(magrittr,"%>%")

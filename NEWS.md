@@ -1,3 +1,9 @@
+# mshap 0.0.0.9003
+
+## Enhancement
+
+- Added documentation to all functions
+
 # mshap 0.0.0.9002
 
 ## Feature

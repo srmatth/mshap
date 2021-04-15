@@ -20,6 +20,7 @@ The purpose of this vignette will be to explore different use cases for mSHAP.
 It will focus heavily on insurance ratemaking, and will be based on the "AutoClaims" and "dataOhlsson" data sets that can be obtained in the `{insuranceData}` package, as demonstrated below:
 
 ```{r setup-r}
+## R
 # library(mshap)
 devtools::load_all()
 library(reticulate) # for accessing python objects from r and vice-versa
@@ -33,6 +34,7 @@ data("dataOhlsson") # the data we will use for the second example
 In addition to the R libraries included above, we will need the additional python modules for these examples:
 
 ```{python setup-py}
+## Python
 import numpy as np
 import pandas as pd
 import shap
@@ -48,6 +50,7 @@ Suppose that we wish to be able to predict to total amount of money a consumer w
 We might simulate 4 explanatory variables that looks like the following:
 
 ```{r}
+## R
 set.seed(16)
 age <- runif(1000, 18, 60)
 income <- runif(1000, 50000, 150000)
@@ -59,6 +62,7 @@ sex <- as.numeric(runif(1000, 0, 1) > 0.5)
 Now because this is a contrived example, we will knowingly set the response variables as follows (suppose here that `cost_per_month` is usage based, so as to be continuous):
 
 ```{r}
+## R
 cost_per_month <- (0.0006 * income - 0.2 * sex + 0.5 * married - 0.001 * age) + 10
 num_months <- (0.0001 * income + 0.0001 * sex + 0.05 * married - 0.05 * age) + 3
 ```
@@ -66,6 +70,7 @@ num_months <- (0.0001 * income + 0.0001 * sex + 0.05 * married - 0.05 * age) + 3
 Thus, we have our data.  We will combine the covariates into a single data frame for ease of use in python.
 
 ```{r}
+## R
 X <- data.frame(age, income, married, sex)
 ```
 
@@ -74,6 +79,7 @@ Instead of multiplying these two vectors together initially, we will instead cre
 
 We now move over to python to create our two models and predict on the training sets:
 ```{python}
+## Python
 X = r.X
 y1 = r.cost_per_month
 y2 = r.num_months
@@ -93,6 +99,8 @@ tot_rev = cpm_preds * nm_preds
 We will now proceed to use TreeSHAP and subsequently mSHAP to explain the ultimate model predictions.
 
 ```{python}
+## Python
+
 # because these are tree-based models, shap.Explainer uses TreeSHAP to calculate
 # fast, exact SHAP values for each model individually
 cpm_ex = shap.Explainer(cpm_mod)
@@ -105,6 +113,7 @@ nm_expected_value = nm_ex.expected_value
 ```
 
 ```{r}
+## R
 final_shap <- mshap(
   shap_1 = py$cpm_shap, 
   shap_2 = py$nm_shap, 
@@ -119,6 +128,7 @@ final_shap$expected_value
 
 As a check, you can see that the expected value for mSHAP is indeed the expected value of the model across the training data.
 ```{r}
+## R
 mean(py$tot_rev)
 ```
 
@@ -130,6 +140,7 @@ The mSHAP package comes with additional functions that can be used to visualize 
 What is show here are the default outputs, but these functions return `{ggplot2}` objects that are easily customizable.
 
 ```{r, fig.width=5, fig.height=5,fig.align='center'}
+## R
 summary_plot(
   variable_values = X,
   shap_values = final_shap$shap_vals, 
@@ -138,6 +149,7 @@ summary_plot(
 ```
 
 ```{r, fig.width=5, fig.height=5,fig.align='center'}
+## R
 observation_plot(
   variable_values = X[46,],
   shap_values = final_shap$shap_vals[46,],
@@ -161,6 +173,7 @@ Our frequency model will be a multinomial model, which will allow us to demonstr
 Let's take a look at the data we will be using.
 
 ```{r}
+## R
 dataOhlsson %>% head()
 ```
 
@@ -168,6 +181,7 @@ We will first rename the columns, and look at summaries of each of the variables
 Scikit-learn does not accept non-numeric covariates, so we will also convert the `gender` variable to an `is_male` indicator.
 
 ```{r}
+## R
 cleaned <- dataOhlsson %>%
   mutate(severity = skadkost / antskad) %>%
   select(
@@ -195,6 +209,7 @@ Our next step will be to create a train/test split on the overall data.  This wi
 We will use 90% of our data to train the model and only 10% to test it, for faster run times on the SHAP explainers.
 
 ```{r}
+## R
 idx <- createDataPartition(cleaned$claims, p = 0.9, list = FALSE)
 train <- cleaned[idx,]
 test <- cleaned[-idx,]
@@ -205,6 +220,7 @@ We filter for only policies with a claim to create a severity specific training 
 Also, we remove the exposure variable, as it should have no bearing on severity
 
 ```{r}
+## R
 train_sev <- train %>%
   filter(claims > 0) %>%
   select(-exposure, -claims)
@@ -217,6 +233,7 @@ In order to create this model, we will use the same variables as before, but wei
 Furthermore, we will downsample the rows with 0 claims while upsampling the rows with 1 and 2 claims, so we have a balanced data set.
 
 ```{r}
+## R
 freq_0 <- train %>%
   filter(claims == 0) %>%
   sample_n(8000, replace = TRUE)
@@ -237,6 +254,7 @@ train_freq <- freq_0 %>%
 To conclude the data preparation step, we will split our data into the predictors and the response, for ease of model fitting in python.
 
 ```{r}
+## R
 X_sev <- train_sev %>%
   select(-severity)
 y_sev <- train_sev %>%
@@ -254,6 +272,7 @@ y_freq <- train_freq %>%
 Our first model will predict the severity, or the cost per claim. It will be trained in python.
 
 ```{python}
+## Python
 mod_dat_sev = r.X_sev
 sev = r.y_sev
 
@@ -265,6 +284,7 @@ sev_mod.fit(mod_dat_sev, sev)
 The next model will predict the frequency and will also be trained in python.
 
 ```{python}
+## Python
 mod_dat_freq = r.X_freq
 claims = r.y_freq
 
@@ -278,6 +298,7 @@ freq_mod.fit(mod_dat_freq, claims)
 We will now take our test set predict on it with the two created models.  The subsequent model outputs will be multiplied together and then averaged for each row to obtain an expected cost per row.
 
 ```{r}
+## R
 test_sev <- test %>%
   select(-exposure, -severity, -claims)
 test_freq <- test %>%
@@ -285,6 +306,7 @@ test_freq <- test %>%
 ```
 
 ```{python}
+## Python
 test_sev = r.test_sev
 test_freq = r.test_freq
 
@@ -293,6 +315,7 @@ preds_freq = freq_mod.predict_proba(test_freq)
 ```
 
 ```{r}
+## R
 preds_sev <- py$preds_sev
 preds_freq <- py$preds_freq %>%
   as.data.frame()
@@ -313,6 +336,7 @@ With the goal of explaining this "average value" prediction, we will eventually 
 However, it is necessary to first calculate the SHAP values for the two models separately.
 
 ```{python}
+## Python
 sev_ex = shap.Explainer(sev_mod)
 sev_expected_val = sev_ex.expected_value
 sev_preds_explained = sev_ex.shap_values(test_sev)
@@ -323,6 +347,7 @@ freq_preds_explained = freq_ex.shap_values(test_freq)
 ```
 
 ```{r}
+## R
 freq_shap <- py$freq_preds_explained
 sev_shap <- py$sev_preds_explained
 ```
@@ -333,6 +358,7 @@ Recall that our models do not use exactly the same predictors, so specifying the
 Note also that passing in a list as one of the `shap*` arguments will cause a nested list to be returned, instead of the normal list.
 
 ```{r}
+## R
 mshap_res <- mshap(
   shap_1 = freq_shap,
   shap_2 = sev_shap,
@@ -347,6 +373,7 @@ Since we want the expected value, we would like to combine the SHAP values in th
 This can be done in the following code.
 
 ```{r}
+## R
 ev_explained <- mshap_res[[1]]$shap_vals * 0 + 
   mshap_res[[2]]$shap_vals * 1 + 
   mshap_res[[3]]$shap_vals * 2
@@ -359,11 +386,13 @@ shap_expected_values <- mshap_res[[1]]$expected_value * 0+
 ### Step 5: Visualize the Results
 
 ```{r, fig.width=5, fig.height=5,fig.align='center'}
+## R
 summary_plot(variable_values = test_freq, shap_values = ev_explained)
 ```
 
 
 ```{r, fig.width=5, fig.height=5,fig.align='center'}
+## R
 observation_plot(variable_values = test_freq[1,], shap_values = ev_explained[1,], expected_value = shap_expected_values[1])
 ```
 
