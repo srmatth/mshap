@@ -1,6 +1,6 @@
 Package: mshap
 Title: Compute Multiplicative SHAP values
-Version: 0.0.0.9000
+Version: 0.0.0.9002
 Authors@R: 
     person(given = "Spencer",
            family = "Matthews",
