@@ -125,15 +125,15 @@ head(final_shap$shap_vals)
 #> # A tibble: 6 x 4
 #>      V1    V2     V3    V4
 #>   <dbl> <dbl>  <dbl> <dbl>
-#> 1 -29.6 -373. -1.61  -5.22
-#> 2  49.3  625.  2.81  -7.60
-#> 3  10.3  538.  2.51   4.97
-#> 4  32.5 -436. -0.799 -6.51
-#> 5 -77.8  587. -0.561 -7.15
-#> 6  37.1  420. -1.52  -8.55
+#> 1 -29.0 -374. -1.31  -4.30
+#> 2  49.4  629.  1.27  -6.13
+#> 3  10.6  537.  3.43   5.52
+#> 4  28.9 -434.  0.443 -4.61
+#> 5 -71.4  583.  0.354 -7.51
+#> 6  38.7  420. -0.472 -8.20
 
 final_shap$expected_value
-#> [1] 823.0209
+#> [1] 822.7676
 ```
 
 As a check, you can see that the expected value for mSHAP is indeed the
@@ -142,7 +142,7 @@ expected value of the model across the training data.
 ``` r
 ## R
 mean(py$tot_rev)
-#> [1] 823.0209
+#> [1] 822.7676
 ```
 
 We now have calculated the mSHAP values for the multiplied model
@@ -182,4 +182,5 @@ observation_plot(
 
 -   For more information about SHAP values in general, you can visit the
     [SHAP github page](https://github.com/slundberg/shap)
--   If you use `{mshap}`, please cite [this article](https://google.com)
+-   If you use `{mshap}`, please cite [this
+    article](https://google.com/)
