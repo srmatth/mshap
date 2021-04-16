@@ -1,3 +1,24 @@
+globalVariables(
+  c(
+    ".",
+    "avg_value",
+    "bar_end",
+    "bar_start",
+    "covariate",
+    "desc",
+    "head",
+    "installed.packages",
+    "is_positive",
+    "setNames",
+    "shap_val",
+    "value",
+    "var_val",
+    "variable"
+  )
+)
+
+
+
 #' Multiply SHAP
 #' 
 #' A Helper Function for the mSHAP function

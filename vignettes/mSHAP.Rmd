@@ -21,8 +21,8 @@ It will focus heavily on insurance ratemaking, and will be based on the "AutoCla
 
 ```{r setup-r}
 ## R
-# library(mshap)
-devtools::load_all()
+
+library(mshap)
 library(reticulate) # for accessing python objects from r and vice-versa
 library(insuranceData) # for the data
 library(dplyr) # for the data manipulation

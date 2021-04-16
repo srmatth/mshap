@@ -125,15 +125,15 @@ head(final_shap$shap_vals)
 #> # A tibble: 6 x 4
 #>      V1    V2     V3    V4
 #>   <dbl> <dbl>  <dbl> <dbl>
-#> 1 -30.8 -371. -1.55  -4.86
-#> 2  52.9  624.  1.99  -7.55
-#> 3  10.3  529.  3.26   4.41
-#> 4  32.6 -436. -1.28  -5.94
-#> 5 -72.7  576.  0.605 -7.31
-#> 6  38.3  417. -1.92  -7.47
+#> 1 -29.6 -373. -1.61  -5.22
+#> 2  49.3  625.  2.81  -7.60
+#> 3  10.3  538.  2.51   4.97
+#> 4  32.5 -436. -0.799 -6.51
+#> 5 -77.8  587. -0.561 -7.15
+#> 6  37.1  420. -1.52  -8.55
 
 final_shap$expected_value
-#> [1] 822.4438
+#> [1] 823.0209
 ```
 
 As a check, you can see that the expected value for mSHAP is indeed the
@@ -142,7 +142,7 @@ expected value of the model across the training data.
 ``` r
 ## R
 mean(py$tot_rev)
-#> [1] 822.4438
+#> [1] 823.0209
 ```
 
 We now have calculated the mSHAP values for the multiplied model
@@ -162,7 +162,7 @@ summary_plot(
 )
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-10-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-unnamed-chunk-10-1.png" style="display: block; margin: auto;" />
 
 ``` r
 ## R
@@ -176,7 +176,7 @@ observation_plot(
 #> Warning in max(x): no non-missing arguments to max; returning -Inf
 ```
 
-<img src="README_files/figure-gfm/unnamed-chunk-11-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-unnamed-chunk-11-1.png" style="display: block; margin: auto;" />
 
 ## Citations
 

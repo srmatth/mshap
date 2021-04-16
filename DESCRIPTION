@@ -1,6 +1,6 @@
 Package: mshap
 Title: Compute Multiplicative SHAP values
-Version: 0.0.0.9003
+Version: 0.0.0.9004
 Authors@R: 
     person(given = "Spencer",
            family = "Matthews",
@@ -23,5 +23,9 @@ Suggests:
     knitr,
     ggplot2,
     ggbeeswarm,
-    tidyr
+    tidyr,
+    insuranceData,
+    forcats,
+    reticulate,
+    caret
 VignetteBuilder: knitr

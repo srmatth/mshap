@@ -1,3 +1,9 @@
+# mshap 0.0.0.9004
+
+## Clean Up
+
+- Adding dependencies and other items to ensure that there are no notes/warnings in `R CMD CHECK`
+
 # mshap 0.0.0.9003
 
 ## Enhancement

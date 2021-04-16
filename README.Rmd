@@ -7,7 +7,8 @@ output: github_document
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.path = "man/figures/README-"
 )
 devtools::load_all()
 library(reticulate) # for accessing python objects from r and vice-versa
