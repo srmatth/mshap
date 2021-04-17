@@ -165,8 +165,8 @@ observation_plot(
 )
 ```
 
-## Citations
+## Attribution
 
 - For more information about SHAP values in general, you can visit the [SHAP github page](https://github.com/slundberg/shap)
-- If you use `{mshap}`, please cite [this article](https://google.com/)
+- If you use `{mshap}`, please cite [this article](https://www.google.com/)
 

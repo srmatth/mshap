@@ -7,12 +7,12 @@ Authors@R:
            role = c("aut", "cre"),
            email = "srmatthews98@gmail.com")
 Description: This package allows for the compuataion of mSHAP values on
-    two-part models. It alows have a couple functions for simply plotting of
+    two-part models. It also has a couple of functions for simple plotting of
     the results.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Imports: 
     magrittr (>= 1.5),
     purrr (>= 0.3.4),
