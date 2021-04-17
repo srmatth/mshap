@@ -23,23 +23,30 @@
 #'   order of the columns in both `variable_values` and `shap_values`. If
 #'   `NULL` (default), then the column names of the `variable_values` are 
 #'   taken as `names`.
-#'
+#' @param colorscale The color scale used for the color of the plot. It should
+#'   be a character vector of length three, with the low color first, the 
+#'   middle color second, and the high color third. These can be hex color 
+#'   codes or colors recognized by `{ggplot2}`.
+#' @param legend.position The position of the legend.  See `?ggplot2::theme` 
+#'   for more information.
+#' @param font_family A character string specifying the family of the text on 
+#'   the plot. Defaults to Times New Roman.
+#' @param title A character string specifying the title of the plot.
+#' 
 #' @return A `{ggplot2}` object
 #' @export
 #'
 #' @examples
 #' # run vignette("mshap", package = "mshap") for examples
-summary_plot <- function(variable_values, shap_values, names = NULL) {
-  ## Check for packages
-  if (!("ggplot2" %in% rownames(installed.packages()))) {
-    stop("You must install the `{ggplot2}` package before running this function")
-  }
-  if (!("ggbeeswarm" %in% rownames(installed.packages()))) {
-    stop("You must install the `{ggbeeswarm}` package before running this function")
-  }
-  if (!("tidyr" %in% rownames(installed.packages()))) {
-    stop("You must install the `{tidyr}` package before running this function")
-  }
+summary_plot <- function(
+  variable_values, 
+  shap_values, 
+  names = NULL,
+  colorscale = c("#A54657", "#FAF0CA", "#0D3B66"),
+  legend.position = c(0.8, 0.2),
+  font_family = "Times New Roman",
+  title = "SHAP Value Summary"
+) {
   
   if (is.null(names)) {
     names <- colnames(variable_values)
@@ -88,18 +95,18 @@ summary_plot <- function(variable_values, shap_values, names = NULL) {
     ggplot2::xlab("SHAP Value") +
     ggplot2::ylab("Variable") +
     ggplot2::scale_color_gradient2(
-      high = "#0D3B66",
-      mid = "#FAF0CA",
-      low = "#A54657",
+      high = colorscale[1],
+      mid = colorscale[2],
+      low = colorscale[3],
       midpoint = 0.5,
       breaks = c(0.1, 0.9),
       labels = c("Low", "High")
     ) +
-    ggplot2::ggtitle("SHAP Value Summary") +
+    ggplot2::ggtitle(title) +
     ggplot2::labs(color = "Value of Variable") +
     ggplot2::theme(
-      text = ggplot2::element_text(family = "Times New Roman"),
-      legend.position = c(0.8, 0.2),
+      text = ggplot2::element_text(family = font_family),
+      legend.position = legend.position,
       aspect.ratio = 0.75,
       plot.title = ggplot2::element_text(hjust = 0.5, size = 18),
       legend.background = ggplot2::element_rect(color = "#0D3B66", fill = "#ffffff")

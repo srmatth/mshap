@@ -4,6 +4,9 @@
 # mshap
 
 <!-- badges: start -->
+
+[![Travis build
+status](https://travis-ci.com/srmatth/mshap.svg?branch=main)](https://travis-ci.com/srmatth/mshap)
 <!-- badges: end -->
 
 The goal of mshap is to allow SHAP values for two-part models to be
@@ -123,17 +126,17 @@ final_shap <- mshap(
 
 head(final_shap$shap_vals)
 #> # A tibble: 6 x 4
-#>      V1    V2     V3    V4
-#>   <dbl> <dbl>  <dbl> <dbl>
-#> 1 -27.3 -374. -2.51  -7.23
-#> 2  49.5  627.  3.15  -7.46
-#> 3  12.6  532.  1.94   5.97
-#> 4  32.3 -437. -0.752 -5.45
-#> 5 -70.9  585. -0.743 -7.58
-#> 6  37.5  417. -0.830 -9.92
+#>       V1    V2     V3    V4
+#>    <dbl> <dbl>  <dbl> <dbl>
+#> 1 -29.4  -374. -1.51  -3.33
+#> 2  51.3   629.  1.78  -6.17
+#> 3   6.98  530.  2.19   4.83
+#> 4  31.9  -437.  0.189 -4.95
+#> 5 -70.4   581. -1.79  -6.01
+#> 6  36.8   421. -1.47  -9.00
 
 final_shap$expected_value
-#> [1] 823.05
+#> [1] 822.6563
 ```
 
 As a check, you can see that the expected value for mSHAP is indeed the
@@ -142,7 +145,7 @@ expected value of the model across the training data.
 ``` r
 ## R
 mean(py$tot_rev)
-#> [1] 823.05
+#> [1] 822.6563
 ```
 
 We now have calculated the mSHAP values for the multiplied model
