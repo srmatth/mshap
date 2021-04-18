@@ -1,3 +1,14 @@
+# mshap 0.0.0.9006
+
+## Feature
+
+- Added a vignette called `mshap_plots` that documents different ways to customize and use the plots.
+
+## Enhancement
+
+- Added examples to all function documentation.
+- Added capability of observation plot to have character values in the `variable_values` data frame.
+
 # mshap 0.0.0.9005
 
 ## Feature

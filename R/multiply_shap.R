@@ -1,4 +1,5 @@
-#' Multiply SHAP
+
+#' @title Multiply SHAP
 #' 
 #' A Helper Function for the mSHAP function
 #'
@@ -65,7 +66,7 @@ multiply_shap <- function(
 }
 
 
-#' Validate the SHAP values passed to the function
+#' @title Validate the SHAP values passed to the function
 #' 
 #' A Simple function that throws errors when certain conditions are not met for
 #' The SHAP values passed to the mSHAP function.
@@ -162,8 +163,8 @@ validate_shap <- function(
 }
 
 
-#' Global Variable Bindings so I can use unquoted variables without 
-#' package check warnings
+# Global Variable Bindings so I can use unquoted variables without 
+# package check warnings
 globalVariables(
   c(
     ".",

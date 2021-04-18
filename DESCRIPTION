@@ -1,6 +1,6 @@
 Package: mshap
 Title: Multiplicative SHAP Values for Two-Part Models
-Version: 0.0.0.9005
+Version: 0.0.0.9006
 Authors@R: 
     person(given = "Spencer",
            family = "Matthews",
@@ -21,7 +21,8 @@ Imports:
     stringr,
     ggplot2,
     ggbeeswarm,
-    tidyr
+    tidyr,
+    tidyselect
 Suggests: 
     rmarkdown,
     knitr,

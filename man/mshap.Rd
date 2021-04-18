@@ -12,7 +12,8 @@ may be matrices or data frames, and up to one may be a list where each
 element is a matrix or data frame (this is necessary when one of the
 models is a multinomial classifier, for instance).  Each data frame or
 matrix here must have the same number of rows, and if there are different
-numbers of columns, then \verb{shap_*_names} must be specified.}
+numbers of columns or the columns are not the same, then \verb{shap_*_names}
+must be specified.}
 
 \item{ex_1, ex_2}{The expected values of the models across the training set.
 If one of the arguments \verb{shap_*} is a list, then the corresponding \verb{ex_*}
