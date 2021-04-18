@@ -19,7 +19,8 @@
 #'   element is a matrix or data frame (this is necessary when one of the 
 #'   models is a multinomial classifier, for instance).  Each data frame or 
 #'   matrix here must have the same number of rows, and if there are different
-#'   numbers of columns, then `shap_*_names` must be specified.
+#'   numbers of columns or the columns are not the same, then `shap_*_names` 
+#'   must be specified.
 #' @param ex_1,ex_2 The expected values of the models across the training set.
 #'   If one of the arguments `shap_*` is a list, then the corresponding `ex_*`
 #'   argument must be a vector (or array) of the same length as the list.

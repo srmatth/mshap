@@ -4,7 +4,18 @@
 \alias{observation_plot}
 \title{SHAP Observation Plot}
 \usage{
-observation_plot(variable_values, shap_values, expected_value, names = NULL)
+observation_plot(
+  variable_values,
+  shap_values,
+  expected_value,
+  names = NULL,
+  fill_colors = c("#A54657", "#0D3B66"),
+  connect_color = "#849698",
+  expected_color = "#849698",
+  predicted_color = "#EE964B",
+  title = "Individual Observation Explanation",
+  font_family = "Times New Roman"
+)
 }
 \arguments{
 \item{variable_values}{A data frame of the  values of the variables that
@@ -21,6 +32,24 @@ returned by \code{mshap()} or obtained from the python \code{{shap}} module.}
 order of the columns in both \code{variable_values} and \code{shap_values}. If
 \code{NULL} (default), then the column names of the \code{variable_values} are
 taken as \code{names}.}
+
+\item{fill_colors}{A character vector of length 2. The first element
+specifies the fill of a negative SHAP value and the second element
+specifies the fill of a positive SHAP value.}
+
+\item{connect_color}{A string specifying the color of the line segment that
+connects the SHAP value bars}
+
+\item{expected_color}{A string specifying the color of the line that marks
+the baseline value, or the expected model output.}
+
+\item{predicted_color}{A string specifying the color of the line that marks
+the value predicted by the model.}
+
+\item{title}{A string specifying the title of the plot.}
+
+\item{font_family}{A string specifying the font family, defaults to Times
+New Roman.}
 }
 \value{
 A \code{{ggplot2}} object

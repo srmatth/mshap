@@ -27,7 +27,7 @@ import sklearn.ensemble as sk
 # mshap
 
 <!-- badges: start -->
-[![Travis build status](https://travis-ci.com/srmatth/mshap.svg?branch=main)](https://travis-ci.com/srmatth/mshap)
+<!--[![Travis build status](https://travis-ci.com/srmatth/mshap.svg?branch=main)](https://travis-ci.com/srmatth/mshap)-->
 <!-- badges: end -->
 
 The goal of mshap is to allow SHAP values for two-part models to be easily computed.
@@ -72,7 +72,7 @@ Now because this is a contrived example, we will knowingly set the response vari
 ```{r}
 ## R
 cost_per_month <- (0.0006 * income - 0.2 * sex + 0.5 * married - 0.001 * age) + 10
-num_months <- (0.0001 * income + 0.0001 * sex + 0.05 * married - 0.05 * age) + 3
+num_months <- 15 * (0.001 * income  * 0.001 * sex * 0.5 * married - 0.05 * age)^2
 ```
 
 Thus, we have our data.  We will combine the covariates into a single data frame for ease of use in python.
@@ -159,12 +159,15 @@ summary_plot(
 ```{r, fig.width=5, fig.height=5,fig.align='center'}
 ## R
 observation_plot(
-  variable_values = X[46,],
-  shap_values = final_shap$shap_vals[46,],
+  variable_values = X[23,],
+  shap_values = final_shap$shap_vals[23,],
   expected_value = final_shap$expected_value,
   names = c("age", "income", "married", "sex")
 )
 ```
+
+For another, more complex, use case run `vignette("mshap")`.
+For more examples and options for plotting, run `vignette("mshap_plots")`.
 
 ## Attribution
 

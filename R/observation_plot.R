@@ -26,19 +26,36 @@
 #'   order of the columns in both `variable_values` and `shap_values`. If
 #'   `NULL` (default), then the column names of the `variable_values` are 
 #'   taken as `names`.
+#' @param fill_colors A character vector of length 2. The first element
+#'   specifies the fill of a negative SHAP value and the second element
+#'   specifies the fill of a positive SHAP value.
+#' @param connect_color A string specifying the color of the line segment that
+#'   connects the SHAP value bars
+#' @param expected_color A string specifying the color of the line that marks
+#'   the baseline value, or the expected model output.
+#' @param predicted_color A string specifying the color of the line that marks
+#'   the value predicted by the model.
+#' @param title A string specifying the title of the plot.
+#' @param font_family A string specifying the font family, defaults to Times
+#'   New Roman.
 #'
 #' @return A `{ggplot2}` object
 #' @export
 #'
 #' @examples
 #' # run vignette("mshap", package = "mshap") for examples
-observation_plot <- function(variable_values, shap_values, expected_value, names = NULL) {
-  if (!("ggplot2" %in% rownames(installed.packages()))) {
-    stop("You must install the `{ggplot2}` package before running this function")
-  }
-  if (!("tidyr" %in% rownames(installed.packages()))) {
-    stop("You must install the `{tidyr}` package before running this function")
-  }
+observation_plot <- function(
+  variable_values, 
+  shap_values, 
+  expected_value, 
+  names = NULL,
+  fill_colors = c("#A54657", "#0D3B66"),
+  connect_color = "#849698",
+  expected_color = "#849698",
+  predicted_color = "#EE964B",
+  title = "Individual Observation Explanation",
+  font_family = "Times New Roman"
+) {
   
   if (is.null(names)) {
     names <- colnames(variable_values)
@@ -53,6 +70,7 @@ observation_plot <- function(variable_values, shap_values, expected_value, names
     ) %>%
     dplyr::full_join(
       variable_values %>%
+        magrittr::set_colnames(names) %>%
         tidyr::pivot_longer(
           cols = colnames(.),
           names_to = "covariate",
@@ -81,11 +99,12 @@ observation_plot <- function(variable_values, shap_values, expected_value, names
     ) + 
     ggplot2::geom_hline(
       ggplot2::aes(yintercept = expected_value),
-      color = "#849698",
+      color = expected_color,
       size = 1.5
     ) +
     ggplot2::geom_rect(stat = "identity") +
-    ggplot2::scale_fill_manual(values = setNames(c("#A54657", "#0D3B66"), c(FALSE, TRUE))) +
+    ggplot2::scale_fill_manual(
+      values = setNames(fill_colors, c(FALSE, TRUE))) +
     ggplot2::coord_flip(clip = "off") +
     ggplot2::geom_segment(
       ggplot2::aes(
@@ -94,13 +113,13 @@ observation_plot <- function(variable_values, shap_values, expected_value, names
         x = as.numeric(covariate) + 0.25,
         xend = as.numeric(covariate) - 1.25
       ),
-      color = "#849698",
+      color = connect_color,
       lwd = 1
     ) +
     ggplot2::theme_classic() +
     ggplot2::geom_hline(
       ggplot2::aes(yintercept = predicted_value),
-      color = "#EE964B",
+      color = predicted_color,
       size = 1.5
     ) +
     ggplot2::scale_y_continuous(
@@ -121,16 +140,16 @@ observation_plot <- function(variable_values, shap_values, expected_value, names
     ggplot2::scale_x_discrete(
       labels = rev(stringr::str_c(d$covariate, "\n", signif(d$var_val, 3)))
     ) +
-    ggplot2::ggtitle(stringr::str_c("Individual Observation Explanation")) +
+    ggplot2::ggtitle(title) +
     ggplot2::theme(
-      text = ggplot2::element_text(family = "Times New Roman"),
+      text = ggplot2::element_text(family = font_family),
       legend.position = "none",
       axis.text.y = ggplot2::element_text(
-        family = "Times New Roman",
+        family = font_family,
         size = 10
       ),
       axis.text.x = ggplot2::element_text(
-        family = "Times New Roman",
+        family = font_family,
         size = 12,
         hjust = 0.5
       ),

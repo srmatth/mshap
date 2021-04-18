@@ -4,9 +4,7 @@
 # mshap
 
 <!-- badges: start -->
-
-[![Travis build
-status](https://travis-ci.com/srmatth/mshap.svg?branch=main)](https://travis-ci.com/srmatth/mshap)
+<!--[![Travis build status](https://travis-ci.com/srmatth/mshap.svg?branch=main)](https://travis-ci.com/srmatth/mshap)-->
 <!-- badges: end -->
 
 The goal of mshap is to allow SHAP values for two-part models to be
@@ -59,7 +57,7 @@ usage based, so as to be continuous):
 ``` r
 ## R
 cost_per_month <- (0.0006 * income - 0.2 * sex + 0.5 * married - 0.001 * age) + 10
-num_months <- (0.0001 * income + 0.0001 * sex + 0.05 * married - 0.05 * age) + 3
+num_months <- 15 * (0.001 * income  * 0.001 * sex * 0.5 * married - 0.05 * age)^2
 ```
 
 Thus, we have our data. We will combine the covariates into a single
@@ -126,17 +124,17 @@ final_shap <- mshap(
 
 head(final_shap$shap_vals)
 #> # A tibble: 6 x 4
-#>       V1    V2     V3    V4
-#>    <dbl> <dbl>  <dbl> <dbl>
-#> 1 -29.4  -374. -1.51  -3.33
-#> 2  51.3   629.  1.78  -6.17
-#> 3   6.98  530.  2.19   4.83
-#> 4  31.9  -437.  0.189 -4.95
-#> 5 -70.4   581. -1.79  -6.01
-#> 6  36.8   421. -1.47  -9.00
+#>       V1     V2    V3     V4
+#>    <dbl>  <dbl> <dbl>  <dbl>
+#> 1  1160. -1228. 12.7  -11.5 
+#> 2 -2689.  1125. 22.7   -6.36
+#> 3 -1022.  1316. 19.4   17.3 
+#> 4 -2087.  -876.  2.72 -21.6 
+#> 5  3794.  2125. 31.5  -17.2 
+#> 6 -2155.   926. 21.2   -4.14
 
 final_shap$expected_value
-#> [1] 822.6563
+#> [1] 4394.444
 ```
 
 As a check, you can see that the expected value for mSHAP is indeed the
@@ -145,7 +143,7 @@ expected value of the model across the training data.
 ``` r
 ## R
 mean(py$tot_rev)
-#> [1] 822.6563
+#> [1] 4394.444
 ```
 
 We now have calculated the mSHAP values for the multiplied model
@@ -170,8 +168,8 @@ summary_plot(
 ``` r
 ## R
 observation_plot(
-  variable_values = X[46,],
-  shap_values = final_shap$shap_vals[46,],
+  variable_values = X[23,],
+  shap_values = final_shap$shap_vals[23,],
   expected_value = final_shap$expected_value,
   names = c("age", "income", "married", "sex")
 )
@@ -180,6 +178,9 @@ observation_plot(
 ```
 
 <img src="man/figures/README-unnamed-chunk-11-1.png" style="display: block; margin: auto;" />
+
+For another, more complex, use case run `vignette("mshap")`. For more
+examples and options for plotting, run `vignette("mshap_plots")`.
 
 ## Attribution
 

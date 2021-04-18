@@ -1,3 +1,20 @@
+# mshap 0.0.0.9005
+
+## Feature
+
+- Added parameters `colorscale`, `legend.position`, `font_family`, and `title` to the `summary_plot()` function, for greater ease of customization.
+- Added parameters `fill_colors`, `connect_colors`, `expected_color`, `predicted_color`, `title`, and `font_family` to the `observation_plot()` function for greater ease of customization.
+- Added Travis CI pipeline functionality.
+
+## Enhancement
+
+- Changed `{ggplot2}`, `{ggbeeswarm}` and `{tidyr}` to imports, instead of suggests.
+- Added tests for all functions (close to 100% codecov).
+
+## Bug Fix
+
+- Fixed bug in `mshap()` function where data frames with the same number of columns but different names were not getting flagged to add additional columns even when `shap_*_names` was specified.
+
 # mshap 0.0.0.9004
 
 ## Clean Up

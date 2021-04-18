@@ -1,6 +1,6 @@
 Package: mshap
 Title: Multiplicative SHAP Values for Two-Part Models
-Version: 0.0.0.9004
+Version: 0.0.0.9005
 Authors@R: 
     person(given = "Spencer",
            family = "Matthews",
@@ -11,6 +11,7 @@ Description: This package allows for the compuataion of mSHAP values on
     the results.
 License: MIT + file LICENSE
 Encoding: UTF-8
+LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
@@ -31,3 +32,5 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+Depends: 
+    R (>= 2.10)

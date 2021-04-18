@@ -4,7 +4,15 @@
 \alias{summary_plot}
 \title{SHAP Summary Plot}
 \usage{
-summary_plot(variable_values, shap_values, names = NULL)
+summary_plot(
+  variable_values,
+  shap_values,
+  names = NULL,
+  colorscale = c("#A54657", "#FAF0CA", "#0D3B66"),
+  legend.position = c(0.8, 0.2),
+  font_family = "Times New Roman",
+  title = "SHAP Value Summary"
+)
 }
 \arguments{
 \item{variable_values}{A data frame of the  values of the variables that
@@ -18,6 +26,19 @@ or obtained from the python \code{{shap}} module.}
 order of the columns in both \code{variable_values} and \code{shap_values}. If
 \code{NULL} (default), then the column names of the \code{variable_values} are
 taken as \code{names}.}
+
+\item{colorscale}{The color scale used for the color of the plot. It should
+be a character vector of length three, with the low color first, the
+middle color second, and the high color third. These can be hex color
+codes or colors recognized by \code{{ggplot2}}.}
+
+\item{legend.position}{The position of the legend.  See \code{?ggplot2::theme}
+for more information.}
+
+\item{font_family}{A character string specifying the family of the text on
+the plot. Defaults to Times New Roman.}
+
+\item{title}{A character string specifying the title of the plot.}
 }
 \value{
 A \code{{ggplot2}} object
