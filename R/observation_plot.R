@@ -149,16 +149,16 @@ observation_plot <- function(
     dplyr::full_join(
       variable_values %>%
         magrittr::set_colnames(names) %>%
-        dplyr::mutate_if(
-          is.numeric,
-          ~as.character(signif(.x, 3))
-        ) %>%
-        # dplyr::mutate(
-        #   dplyr::across(
-        #     .cols = tidyselect::where(is.numeric),
-        #     .fns = ~as.character(signif(.x, 3))
-        #   )
+        # dplyr::mutate_if(
+        #   is.numeric,
+        #   ~as.character(signif(.x, 3))
         # ) %>%
+        dplyr::mutate(
+          dplyr::across(
+            .cols = where(is.numeric),
+            .fns = ~as.character(signif(.x, 3))
+          )
+        ) %>%
         tidyr::pivot_longer(
           cols = colnames(.),
           names_to = "covariate",
@@ -246,3 +246,5 @@ observation_plot <- function(
       plot.subtitle = ggplot2::element_text(hjust = 0.5)
     )
 }
+
+utils::globalVariables("where")

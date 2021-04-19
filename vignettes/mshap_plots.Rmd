@@ -22,8 +22,7 @@ First, we will set up out `R` libraries.
 
 ```{r setup}
 # Load Libraries
-devtools::load_all()
-# library(mshap)
+library(mshap)
 library(ggplot2)
 library(dplyr)
 ```
