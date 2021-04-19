@@ -211,17 +211,23 @@ observation_plot <- function(
       size = 1.5
     ) +
     ggplot2::scale_y_continuous(
-      breaks = expected_value,
-      labels = stringr::str_c(
-        "Baseline:\n", 
-        signif(expected_value, 6)
+      breaks = c(expected_value, predicted_value),
+      labels = c(
+        stringr::str_c(
+          "Baseline:\n", 
+          signif(expected_value, 6)
+        ),
+        ""
       ),
       sec.axis = ggplot2::sec_axis(
         trans = ~.,
-        breaks = c(predicted_value),
-        labels = stringr::str_c(
-          "Model Prediction:\n", 
-          signif(predicted_value, 6)
+        breaks = c(predicted_value, expected_value),
+        labels = c(
+          stringr::str_c(
+            "Model Prediction:\n", 
+            signif(predicted_value, 6)
+          ),
+          ""
         )
       )
     ) +
@@ -243,7 +249,8 @@ observation_plot <- function(
       ),
       axis.title = ggplot2::element_blank(),
       plot.title = ggplot2::element_text(hjust = 0.5),
-      plot.subtitle = ggplot2::element_text(hjust = 0.5)
+      plot.subtitle = ggplot2::element_text(hjust = 0.5),
+      axis.ticks.x = ggplot2::element_blank()
     )
 }
 

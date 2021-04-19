@@ -9,6 +9,10 @@
 - Added examples to all function documentation.
 - Added capability of observation plot to have character values in the `variable_values` data frame.
 
+## Clean Up
+
+- Made the warning message in `observation_plot()` go away (it was occurring because there was only one tick mark on each axis, so I added an invisible one)
+
 # mshap 0.0.0.9005
 
 ## Feature
