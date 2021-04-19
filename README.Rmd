@@ -27,7 +27,7 @@ import sklearn.ensemble as sk
 # mshap
 
 <!-- badges: start -->
-<!--[![Travis build status](https://travis-ci.com/srmatth/mshap.svg?branch=main)](https://travis-ci.com/srmatth/mshap)-->
+[![Travis build status](https://travis-ci.com/srmatth/mshap.svg?branch=main)](https://travis-ci.com/srmatth/mshap)
 <!-- badges: end -->
 
 The goal of mshap is to allow SHAP values for two-part models to be easily computed.
