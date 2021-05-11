@@ -4,3 +4,4 @@
 ^README.Rmd
 ..Rcheck
 ^\.travis\.yml$
+inst/paper
