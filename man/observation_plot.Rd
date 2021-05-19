@@ -9,6 +9,7 @@ observation_plot(
   shap_values,
   expected_value,
   names = NULL,
+  num_vars = 10,
   fill_colors = c("#A54657", "#0D3B66"),
   connect_color = "#849698",
   expected_color = "#849698",
@@ -32,6 +33,9 @@ returned by \code{mshap()} or obtained from the python \code{{shap}} module.}
 order of the columns in both \code{variable_values} and \code{shap_values}. If
 \code{NULL} (default), then the column names of the \code{variable_values} are
 taken as \code{names}.}
+
+\item{num_vars}{An integer specifying the number of variables to show in the
+plot, defaults to the 10 most important.}
 
 \item{fill_colors}{A character vector of length 2. The first element
 specifies the fill of a negative SHAP value and the second element

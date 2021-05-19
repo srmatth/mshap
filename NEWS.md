@@ -1,3 +1,10 @@
+# mshap 0.0.0.9007
+
+## Enhancement
+
+- Limit the number of variables that are plotted in the plotting functions
+- Add data (.buildignore'd) and code pertaining to mshap paper
+
 # mshap 0.0.0.9006
 
 ## Feature

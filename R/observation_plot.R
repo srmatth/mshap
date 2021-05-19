@@ -272,4 +272,4 @@ observation_plot <- function(
     )
 }
 
-utils::globalVariables("where")
+

@@ -8,9 +8,6 @@
 #'
 #' @section Examples:
 #'
-#' ```{r, child = "man/rmd/setup.Rmd"}
-#' ```
-#'
 #' Selection helpers can be used in functions like `dplyr::select()`
 #' or `tidyr::pivot_longer()`. Let's first attach the tidyverse:
 #'
@@ -67,7 +64,7 @@ where <- function(fn) {
     out <- predicate(x, ...)
     
     if (!rlang::is_bool(out)) {
-      abort("`where()` must be used with functions that return `TRUE` or `FALSE`.")
+      rlang::abort("`where()` must be used with functions that return `TRUE` or `FALSE`.")
     }
     
     out

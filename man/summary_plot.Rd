@@ -8,6 +8,7 @@ summary_plot(
   variable_values,
   shap_values,
   names = NULL,
+  num_vars = 10,
   colorscale = c("#A54657", "#FAF0CA", "#0D3B66"),
   legend.position = c(0.8, 0.2),
   font_family = "Times New Roman",
@@ -26,6 +27,9 @@ or obtained from the python \code{{shap}} module.}
 order of the columns in both \code{variable_values} and \code{shap_values}. If
 \code{NULL} (default), then the column names of the \code{variable_values} are
 taken as \code{names}.}
+
+\item{num_vars}{An integer specifying the number of variables to show in the
+plot, defaults to the 10 most important.}
 
 \item{colorscale}{The color scale used for the color of the plot. It should
 be a character vector of length three, with the low color first, the
