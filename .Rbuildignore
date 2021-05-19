@@ -5,3 +5,4 @@
 ..Rcheck
 ^\.travis\.yml$
 inst/paper
+^codecov\.yml$

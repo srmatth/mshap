@@ -23,6 +23,8 @@
 #'   order of the columns in both `variable_values` and `shap_values`. If
 #'   `NULL` (default), then the column names of the `variable_values` are 
 #'   taken as `names`.
+#' @param num_vars An integer specifying the number of variables to show in the
+#'   plot, defaults to the 10 most important.
 #' @param colorscale The color scale used for the color of the plot. It should
 #'   be a character vector of length three, with the low color first, the 
 #'   middle color second, and the high color third. These can be hex color 
@@ -120,6 +122,7 @@ summary_plot <- function(
   variable_values, 
   shap_values, 
   names = NULL,
+  num_vars = 10,
   colorscale = c("#A54657", "#FAF0CA", "#0D3B66"),
   legend.position = c(0.8, 0.2),
   font_family = "Times New Roman",
@@ -129,16 +132,6 @@ summary_plot <- function(
   if (is.null(names)) {
     names <- colnames(variable_values)
   }
-  
-  variable_values <- variable_values %>%
-    dplyr::mutate(
-      dplyr::across(dplyr::everything(), .fns = ~((.x - min(.x)) / (max(.x) - min(.x))))
-    ) %>%
-    tidyr::pivot_longer(
-      names_to = "variable",
-      values_to = "var_val",
-      cols = colnames(.)
-    )
   
   important_vars <- shap_values %>%
     magrittr::set_colnames(names) %>%
@@ -153,9 +146,34 @@ summary_plot <- function(
     dplyr::ungroup() %>%
     dplyr::arrange(avg_value) %>%
     dplyr::pull(variable)
+  if (length(important_vars) > num_vars) {
+    n <- length(important_vars)
+    important_vars <- important_vars[(n - num_vars + 1):n]
+  }
+  
+  variable_values <- variable_values %>%
+    dplyr::select(dplyr::all_of(important_vars)) %>%
+    dplyr::mutate(
+      dplyr::across(
+        where(is.character),
+        .fns = ~as.numeric(as.factor(.x))
+      )
+    ) %>%
+    dplyr::mutate(
+      dplyr::across(
+        dplyr::everything(), 
+        .fns = ~((.x - min(.x)) / (max(.x) - min(.x)))
+      )
+    ) %>%
+    tidyr::pivot_longer(
+      names_to = "variable",
+      values_to = "var_val",
+      cols = colnames(.)
+    )
   
   shap_values %>%
     magrittr::set_colnames(names) %>%
+    dplyr::select(dplyr::all_of(important_vars)) %>%
     tidyr::pivot_longer(
       names_to = "variable",
       values_to = "value",

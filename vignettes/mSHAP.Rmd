@@ -430,7 +430,7 @@ values in the same way, multiplying the respective values by 0, 1, and
       mshap_res[[2]]$shap_vals * 1 + 
       mshap_res[[3]]$shap_vals * 2
 
-    shap_expected_values <- mshap_res[[1]]$expected_value * 0+ 
+    shap_expected_values <- mshap_res[[1]]$expected_value * 0 + 
       mshap_res[[2]]$expected_value * 1 + 
       mshap_res[[3]]$expected_value * 2
 

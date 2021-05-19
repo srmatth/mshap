@@ -28,6 +28,7 @@ import sklearn.ensemble as sk
 
 <!-- badges: start -->
 [![Travis build status](https://travis-ci.com/srmatth/mshap.svg?token=zA4xhwrbzL7YLqiktuAB&branch=main)](https://travis-ci.com/srmatth/mshap)
+[![Codecov test coverage](https://codecov.io/gh/srmatth/mshap/branch/main/graph/badge.svg)](https://codecov.io/gh/srmatth/mshap?branch=main)
 <!-- badges: end -->
 
 The goal of mshap is to allow SHAP values for two-part models to be easily computed.

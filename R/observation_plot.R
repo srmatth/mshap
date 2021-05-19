@@ -26,6 +26,8 @@
 #'   order of the columns in both `variable_values` and `shap_values`. If
 #'   `NULL` (default), then the column names of the `variable_values` are 
 #'   taken as `names`.
+#' @param num_vars An integer specifying the number of variables to show in the
+#'   plot, defaults to the 10 most important.
 #' @param fill_colors A character vector of length 2. The first element
 #'   specifies the fill of a negative SHAP value and the second element
 #'   specifies the fill of a positive SHAP value.
@@ -127,6 +129,7 @@ observation_plot <- function(
   shap_values, 
   expected_value, 
   names = NULL,
+  num_vars = 10,
   fill_colors = c("#A54657", "#0D3B66"),
   connect_color = "#849698",
   expected_color = "#849698",
@@ -166,6 +169,21 @@ observation_plot <- function(
         ),
       by = c("covariate")
     )
+  if (nrow(individual_shap) > num_vars) {
+  to_keep <- individual_shap %>%
+    dplyr::arrange(desc(abs(shap_val))) %>%
+    dplyr::pull(covariate) %>%
+    `[`(1:num_vars)
+  individual_shap <- individual_shap %>%
+    dplyr::mutate(covariate = forcats::fct_other(covariate, keep = to_keep)) %>%
+    dplyr::group_by(covariate) %>%
+    dplyr::summarize(
+      shap_val = sum(shap_val),
+      var_val = stringr::str_c(unique(var_val), collapse = "|")
+    ) %>%
+    dplyr::ungroup()
+  }
+  
   d <- individual_shap %>%
     dplyr::mutate(covariate = forcats::fct_reorder(covariate, shap_val, abs)) %>%
     dplyr::arrange(desc(covariate)) %>%
@@ -232,7 +250,7 @@ observation_plot <- function(
       )
     ) +
     ggplot2::scale_x_discrete(
-      labels = rev(stringr::str_c(d$covariate, "\n", d$var_val))
+      labels = rev(stringr::str_c(d$covariate, "\n", ifelse(d$covariate == "Other", " ", d$var_val)))
     ) +
     ggplot2::ggtitle(title) +
     ggplot2::theme(
