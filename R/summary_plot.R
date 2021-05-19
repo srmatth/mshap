@@ -152,6 +152,7 @@ summary_plot <- function(
   }
   
   variable_values <- variable_values %>%
+    magrittr::set_colnames(names) %>%
     dplyr::select(dplyr::all_of(important_vars)) %>%
     dplyr::mutate(
       dplyr::across(
