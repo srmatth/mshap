@@ -1,3 +1,13 @@
+# mshap 0.1.0
+
+## Bug Fix
+
+- Fix bug that was causing the expected values to be off if the list-mshap was passed as the second argument to `mshap()`
+
+## Enhancement
+
+- Some changes to paper code that is more accurate
+
 # mshap 0.0.0.9007
 
 ## Enhancement

@@ -32,6 +32,36 @@ freq_preds %>%
     names_to = "num_claims",
     values_to = "prediction"
   ) %>%
+  filter(num_claims %in% c("p0", "p1")) %>%
+  mutate(
+    num_claims = case_when(
+      num_claims == "p0" ~ "Probability of 0 Claims",
+      num_claims == "p1" ~ "Probability of 1 Claim",
+      num_claims == "p2" ~ "Probability of 1+ Claims",
+      num_claims == "p3" ~ "Probability of 1+ Claims"
+    )
+  ) %>%
+  ggplot() +
+  aes(x = prediction, fill = num_claims) +
+  geom_density(color = NA) +
+  facet_wrap(~num_claims) +
+  theme_classic() +
+  ylab("Probability Density") +
+  xlab("Predicted Probability") +
+  ggtitle("Distribution of Frequency Model Predictions (0 and 1)") +
+  theme(
+    text = element_text(family = "Times New Roman"),
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "none"
+  ) +
+  scale_fill_manual(values = c("#A54657", "#849698"))
+freq_preds %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = "num_claims",
+    values_to = "prediction"
+  ) %>%
+  filter(num_claims %in% c("p2", "p3")) %>%
   mutate(
     num_claims = case_when(
       num_claims == "p0" ~ "Probability of 0 Claims",
@@ -47,17 +77,18 @@ freq_preds %>%
   theme_classic() +
   ylab("Probability Density") +
   xlab("Predicted Probability") +
-  ggtitle("Distribution of Frequency Model Predictions") +
+  ggtitle("Distribution of Frequency Model Predictions (2 and 3)") +
   theme(
     text = element_text(family = "Times New Roman"),
     plot.title = element_text(hjust = 0.5),
     legend.position = "none"
   ) +
-  scale_fill_manual(values = c("#A54657", "#849698", "#0D3B66", "#EE964B"))
-  
+  scale_fill_manual(values = c("#0D3B66", "#EE964B"))
+
+
+
 sev_preds %>%
   set_colnames("prediction") %>%
-  mutate(prediction = exp(prediction)) %>%
   ggplot() +
   aes(x = prediction) +
   geom_density(
@@ -86,10 +117,48 @@ sev_shap <- read_csv(str_c(dat_dir, "pd_sev_shap_values_final_mod.csv")) %>%
   select(-X1) %>%
   set_colnames(colnames(test))
 
+## Visualize individual shap values
+summary_plot(variable_values = test, shap_values = sev_shap, title = "Severity SHAP Values")
+observation_plot(
+  variable_values = test[7,],
+  shap_values = sev_shap[7,],
+  expected_value = 3475.54093701,
+  num_vars = 10
+)
+
+summary_plot(variable_values = test, shap_values = freq_shap[[1]], title = "Frequency SHAP Values (0 Claims)")
+summary_plot(variable_values = test, shap_values = freq_shap[[2]], title = "Frequency SHAP Values (1 Claim)")
+summary_plot(variable_values = test, shap_values = freq_shap[[3]], title = "Frequency SHAP Values (2 Claims)")
+summary_plot(variable_values = test, shap_values = freq_shap[[4]], title = "Frequency SHAP Values (3 Claims)")
+observation_plot(
+  variable_values = test[8,],
+  shap_values = freq_shap[[1]][8,],
+  expected_value = .472431991,
+  num_vars = 10
+)
+observation_plot(
+  variable_values = test[8,],
+  shap_values = freq_shap[[2]][8,],
+  expected_value = .517315103,
+  num_vars = 10
+)
+observation_plot(
+  variable_values = test[8,],
+  shap_values = freq_shap[[3]][8,],
+  expected_value = .00978230798,
+  num_vars = 10
+)
+observation_plot(
+  variable_values = test[8,],
+  shap_values = freq_shap[[4]][8,],
+  expected_value = .000470597833,
+  num_vars = 10
+)
+
 ## Get the expected values of the individual SHAP calculations
 ## (from log file created in 04)
-freq_ex <- c(0.18744214, 0.24445534, 0.28483949, 0.28326303)
-sev_ex <- 7.53027045
+freq_ex <- c(.472431991, .517315103, .00978230798, .000470597833)
+sev_ex <- 3475.54093701
 
 ## Compute the mSHAP values
 final_mshap <- mshap(sev_shap, freq_shap, sev_ex, freq_ex)
@@ -105,11 +174,38 @@ shap_expected_values <- final_mshap[[1]]$expected_value * 0 +
   final_mshap[[3]]$expected_value * 2 +
   final_mshap[[4]]$expected_value * 3
 
+# Sanity check to make sure the means are the same
+predictions <- sev_preds %>%
+  set_colnames("predict") %>%
+  cbind(freq_preds) %>%
+  mutate(
+    predicted_value = predict * (p1 + 2 * p2 + 3 * p3)
+  )
+
+predictions %>%
+  ggplot() +
+  aes(x = predicted_value) +
+  geom_density(
+    color = NA,
+    fill = "#0D3B66"
+  ) +
+  theme_classic() +
+  ylab("Probability Density") +
+  xlab("Expected Cost Prediction") +
+  ggtitle("Distribution of Two-Part Model Predictions for Expected Value") +
+  theme(
+    text = element_text(family = "Times New Roman"),
+    plot.title = element_text(hjust = 0.5)
+  )
+
+mean(predictions$predicted_value)
+shap_expected_values
+
 ## Create the mshap plots
 summary_plot(variable_values = test, shap_values = ev_explained)
 observation_plot(
-  variable_values = test[1,],
-  shap_values = ev_explained[1,],
+  variable_values = test[3,],
+  shap_values = ev_explained[3,],
   expected_value = shap_expected_values,
   num_vars = 10
 )

@@ -130,7 +130,7 @@ mshap <- function(
     
     l <- purrr::map2(
       .x = main,
-      .y = ex_1,
+      .y = main_ex,
       .f = ~{
         multiply_shap(
           shap_1 = .x,
