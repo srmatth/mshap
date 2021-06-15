@@ -289,7 +289,7 @@ as it should have no bearing on severity
 Next is frequency. The data will be used to create a multinomial
 classification model, and in this case, the possible values are 0, 1,
 and 2. Technically, it is possible to have more than 2 claims, but we
-will consider the probability so small as to be negligble. In order to
+will consider the probability so small as to be negligible. In order to
 create this model, we will use the same variables as before, but weight
 by the exposure column. Furthermore, we will downsample the rows with 0
 claims while upsampling the rows with 1 and 2 claims, so we have a

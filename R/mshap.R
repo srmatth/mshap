@@ -31,7 +31,7 @@
 #'   `shap_*_names` argument, which will still be a single character vector.
 #'
 #' @return A list containing the multiplied SHAP values and the expected value.
-#'   Or, in the case of a list passed as one of the `shap_*` aguments, a list 
+#'   Or, in the case of a list passed as one of the `shap_*` augments, a list 
 #'   of lists where each element corresponds to the same element in the list
 #'   passed to `shap_*`.
 #' @export

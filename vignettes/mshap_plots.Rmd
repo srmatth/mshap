@@ -34,7 +34,7 @@ Both models will have the following covariates:
 - age: age of aircraft, in years
 - prop_domestic: the number of domestic (within country) flights that the aircraft has done over the past year out of its total number of flights
 - model: our fleet is made up of two models, model A (0) and model B (1)
-- maintain: the number of hours spent maintainig the aircraft over the past year
+- maintain: the number of hours spent maintaining the aircraft over the past year
 
 We will generate random values for these covariates and then generate fake mSHAP values for the final (nonexistent) model so that we can use these in plotting.
 
@@ -126,7 +126,7 @@ observation_plot(
 )
 ```
 
-From this plot, we can see that both the model and the proportion of domestic flights push the prediction down, while the maintenance and the age cause the prediction to be pushed up, and it ultimately settles aroud 971.
+From this plot, we can see that both the model and the proportion of domestic flights push the prediction down, while the maintenance and the age cause the prediction to be pushed up, and it ultimately settles around 971.
 
 Some of the arguments to `observation_plot()` are similar to those of `summary_plot()`.
 First, we will reset the names, change the font, and add a title.

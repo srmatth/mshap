@@ -27,7 +27,7 @@ the \verb{shap_*} arguments, it does NOT affect the corresponding
 }
 \value{
 A list containing the multiplied SHAP values and the expected value.
-Or, in the case of a list passed as one of the \verb{shap_*} aguments, a list
+Or, in the case of a list passed as one of the \verb{shap_*} augments, a list
 of lists where each element corresponds to the same element in the list
 passed to \verb{shap_*}.
 }
