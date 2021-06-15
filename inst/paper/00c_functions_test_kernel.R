@@ -159,3 +159,92 @@ test_kernel_shap <- function(
     dplyr::mutate(n_var = n_var, y1 = y1,theta1 = theta1, theta2 = theta2, sample = sample) %>%
     dplyr::select(n_var, y1, theta1, theta2, sample, variable, dplyr::everything())
 }
+
+test_mshap <- function(
+  y1 = "rowSums(X)", 
+  y2 = "rowSums(X)",
+  sample = 100L, 
+  theta1 = 0.8, 
+  theta2 = 7,
+  n_var = 10
+) {
+  usethis::ui_info("Comupting performance of multiplcative SHAP for {y1} with theta1 = {theta1} and theta2 = {theta2} on {sample} samples")
+  l <- py_shap_vals_general(y1, y2, sample = sample, n_var = n_var)
+  
+  mshap_l <- mshap(
+    shap_1 = l$shap1,
+    shap_2 = l$shap2,
+    ex_1 = l$ex1,
+    ex_2 = l$ex2
+  )
+  
+  res_unif <- compare_shap_vals(
+    mshap_l$shap_vals %>% 
+      mutate(
+        expected_value = mshap_l$expected_value
+      ) %>%
+      mutate(predicted_val = rowSums(.)), 
+    l$real_shap, theta1, theta2
+  )
+  
+  res_unif$summarized %>%
+    dplyr::mutate(n_var = n_var, y1 = y1,theta1 = theta1, theta2 = theta2, sample = sample) %>%
+    dplyr::select(n_var, y1, theta1, theta2, sample, variable, dplyr::everything())
+}
+
+py_shap_vals_general <- function(
+  y1 = "rowSums(X)", 
+  y2 = "rowSums(2*X)", 
+  n_var = 50L,
+  sample = 100L, 
+  seed = 15L
+) {
+  np <- reticulate::import("numpy")
+  pd <- reticulate::import("pandas")
+  shap <- reticulate::import("shap")
+  sklearn <- reticulate::import("sklearn.ensemble")
+  gbr <- sklearn$GradientBoostingRegressor
+  
+  
+  np$random$seed(seed)
+  X <- purrr::map_dfc(.x = 1:n_var, .f = ~np$random$uniform(low = -1L, high = 1L, size = sample)) %>%
+    magrittr::set_colnames(str_c("x", 1:n_var))
+  
+  y1 <- eval(parse(text = y1))
+  y2 <- eval(parse(text = y2))
+  y3 <- y1 * y2
+  
+  mod1 <- gbr(loss = "ls", min_samples_leaf = 2L)
+  mod1$fit(X, y1)
+  
+  mod2 <- gbr(loss = "ls", min_samples_leaf = 2L)
+  mod2$fit(X, y2)
+  
+  exy1 <- shap$TreeExplainer(mod1)
+  y1ex <- exy1$expected_value
+  shapy1 <- exy1$shap_values(X) %>% as.data.frame()
+  
+  exy2 = shap$TreeExplainer(mod2)
+  y2ex = exy2$expected_value
+  shapy2 = exy2$shap_values(X) %>% as.data.frame()
+  
+  pred <- function(X) {
+    mod1$predict(X) * mod2$predict(X)
+  }
+  
+  kernelex <- shap$KernelExplainer(py_func(pred), X)
+  real_shap_vals <- kernelex$shap_values(X) %>%
+    as.data.frame() %>%
+    magrittr::set_colnames(paste0("s", 1:ncol(.), "_real")) %>%
+    mutate(expected_value = kernelex$expected_value) %>%
+    mutate(predicted_val = rowSums(.))
+  
+  list(
+    shap1 = shapy1,
+    shap2 = shapy2,
+    ex1 = y1ex,
+    ex2 = y2ex,
+    real_shap = real_shap_vals
+  )
+}
+

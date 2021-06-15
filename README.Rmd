@@ -27,7 +27,7 @@ import sklearn.ensemble as sk
 # mshap
 
 <!-- badges: start -->
-[![Travis build status](https://travis-ci.com/srmatth/mshap.svg?token=zA4xhwrbzL7YLqiktuAB&branch=main)](https://travis-ci.com/srmatth/mshap)
+[![Travis build status](https://travis-ci.com/srmatth/mshap.svg?branch=main)](https://travis-ci.com/srmatth/mshap)
 [![Codecov test coverage](https://codecov.io/gh/srmatth/mshap/branch/main/graph/badge.svg)](https://codecov.io/gh/srmatth/mshap?branch=main)
 <!-- badges: end -->
 

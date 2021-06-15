@@ -6,3 +6,5 @@
 ^\.travis\.yml$
 inst/paper
 ^codecov\.yml$
+inst/talk
+cran-comments.md

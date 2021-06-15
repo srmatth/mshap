@@ -36,7 +36,7 @@ toc() # 4989.2 seconds (~1.4 hours)
 
 # Write data to file, include code to read it back in again
 readr::write_csv(all_tests, "mSHAP/all_tests_results_kernel_comp_main_2_eqn.csv")
-all_tests <- readr::read_csv("mSHAP/all_tests_results_kernel_comp_main_2_eqn.csv")
+all_tests <- readr::read_csv("inst/paper/all_tests_results_kernel_comp_main_2_eqn.csv")
 
 #### Distribute Alpha Winner ----
 

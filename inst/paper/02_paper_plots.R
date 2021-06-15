@@ -74,7 +74,7 @@ all_tests %>%
   )
 
 ## Tiing Plots ----
-all_times_2_vars <- readr::read_csv("mSHAP/all_times_2_vars.csv")
+all_times_2_vars <- readr::read_csv("inst/paper/all_times_2_vars.csv")
 
 all_times_2_vars %>%
   tidyr::pivot_longer(
@@ -82,28 +82,29 @@ all_times_2_vars %>%
     names_to = "method",
     values_to = "time"
   ) %>%
-  mutate(method = ifelse(method == "kernel_time", "KernelSHAP", "Multiplicative TreeSHAP")) %>%
+  mutate(method = ifelse(method == "kernel_time", "KernelSHAP", "mSHAP")) %>%
   ggplot() +
   aes(x = smaple_size, y = time, color = method) +
-  geom_line(lwd = 1) +
+  geom_line(lwd = 1.5) +
   theme_classic() +
-  scale_color_manual(values = c("#440154", "#29AF7F")) +
+  scale_color_manual(values = c("#A54657", "#0D3B66")) +
   xlab("Sample Size") +
   ylab("Time (seconds)") +
   ggtitle("Comparison of Time by Method", "Number of Variables Fixed at 2") +
   labs(color = "Method") +
+  guides(color = guide_legend(nrow = 1, title.hjust = 0.5, title.position = "top")) +
   theme(
     legend.position = c(0.7, 0.3),
-    legend.box.background = element_rect(color = "#99A88C"),
-    plot.title = element_text(hjust = 0.5, vjust = 0.5, size = 20),
-    plot.subtitle = element_text(hjust = 0.5, size = 18),
-    axis.text = element_text(size = 14),
-    axis.title = element_text(size = 16),
-    legend.text = element_text(size = 14),
-    legend.title = element_text(size = 16)
+    legend.background = element_rect(color = "black"),
+    plot.title = element_text(hjust = 0.5, vjust = 0.5, size = 20, family = "Times New Roman"),
+    plot.subtitle = element_text(hjust = 0.5, size = 18, family = "Times New Roman"),
+    axis.text = element_text(size = 14, family = "Times New Roman"),
+    axis.title = element_text(size = 16, family = "Times New Roman"),
+    legend.text = element_text(size = 14, family = "Times New Roman"),
+    legend.title = element_text(size = 16, family = "Times New Roman")
   )
 
-all_times_100_sample <- readr::read_csv("mSHAP/all_times_100_sample.csv")
+all_times_100_sample <- readr::read_csv("inst/paper/all_times_100_sample.csv")
 
 all_times_100_sample %>%
   tidyr::pivot_longer(
@@ -111,24 +112,25 @@ all_times_100_sample %>%
     names_to = "method",
     values_to = "time"
   ) %>%
-  mutate(method = ifelse(method == "kernel_time", "KernelSHAP", "Multiplicative TreeSHAP")) %>%
+  mutate(method = ifelse(method == "kernel_time", "KernelSHAP", "mSHAP")) %>%
   ggplot() +
   aes(x = num_variables, y = time, color = method) +
-  geom_line(lwd = 1) +
+  geom_line(lwd = 1.5) +
   theme_classic() +
   ylab("Time (seconds)") +
   xlab("Number of Variables")+
-  scale_color_manual(values = c("#440154", "#29AF7F")) +
+  scale_color_manual(values = c("#A54657", "#0D3B66")) +
   ggtitle("Comparison of Time by Method", "Sample Size Fixed at 100") +
   labs(color = "Method") +
+  guides(color = guide_legend(nrow = 1, title.position = "top", title.hjust = 0.5)) +
   theme(
     legend.position = c(0.7, 0.3),
-    legend.box.background = element_rect(color = "#99A88C"),
-    plot.title = element_text(hjust = 0.5, vjust = 0.5, size = 20),
-    plot.subtitle = element_text(hjust = 0.5, size = 18),
-    axis.text = element_text(size = 14),
-    axis.title = element_text(size = 16),
-    legend.text = element_text(size = 14),
-    legend.title = element_text(size = 16)
+    legend.background = element_rect(color = "black"),
+    plot.title = element_text(hjust = 0.5, vjust = 0.5, size = 20, family = "Times New Roman"),
+    plot.subtitle = element_text(hjust = 0.5, size = 18, family = "Times New Roman"),
+    axis.text = element_text(size = 14, family = "Times New Roman"),
+    axis.title = element_text(size = 16, family = "Times New Roman"),
+    legend.text = element_text(size = 14, family = "Times New Roman"),
+    legend.title = element_text(size = 16, family = "Times New Roman")
   )
 

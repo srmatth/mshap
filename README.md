@@ -6,7 +6,7 @@
 <!-- badges: start -->
 
 [![Travis build
-status](https://travis-ci.com/srmatth/mshap.svg?token=zA4xhwrbzL7YLqiktuAB&branch=main)](https://travis-ci.com/srmatth/mshap)
+status](https://travis-ci.com/srmatth/mshap.svg?branch=main)](https://travis-ci.com/srmatth/mshap)
 [![Codecov test
 coverage](https://codecov.io/gh/srmatth/mshap/branch/main/graph/badge.svg)](https://codecov.io/gh/srmatth/mshap?branch=main)
 <!-- badges: end -->
@@ -128,17 +128,17 @@ final_shap <- mshap(
 
 head(final_shap$shap_vals)
 #> # A tibble: 6 x 4
-#>       V1     V2     V3     V4
-#>    <dbl>  <dbl>  <dbl>  <dbl>
-#> 1  1153. -1229.   8.07  -4.90
-#> 2 -2708.  1179.   1.07 -27.5 
-#> 3 -1027.  1333. -16.5   14.2 
-#> 4 -2041.  -885.   5.76 -27.4 
-#> 5  3756.  2106.  87.5   -7.65
-#> 6 -2165.   908.  15.7  -15.3
+#>       V1     V2    V3     V4
+#>    <dbl>  <dbl> <dbl>  <dbl>
+#> 1  1166. -1221. 18.8  -12.8 
+#> 2 -2621.  1106. -1.60 -21.5 
+#> 3 -1047.  1369. 10.1    3.39
+#> 4 -2070.  -875. -6.46 -19.2 
+#> 5  3787.  2099. 46.9  -27.4 
+#> 6 -2144.   905. 12.8  -20.9
 
 final_shap$expected_value
-#> [1] 4394.975
+#> [1] 4396.841
 ```
 
 As a check, you can see that the expected value for mSHAP is indeed the
@@ -147,7 +147,7 @@ expected value of the model across the training data.
 ``` r
 ## R
 mean(py$tot_rev)
-#> [1] 4394.975
+#> [1] 4396.841
 ```
 
 We now have calculated the mSHAP values for the multiplied model
