@@ -127,17 +127,17 @@ final_shap <- mshap(
 
 head(final_shap$shap_vals)
 #> # A tibble: 6 x 4
-#>       V1     V2    V3    V4
-#>    <dbl>  <dbl> <dbl> <dbl>
-#> 1  1157. -1231.  3.28 -30.9
-#> 2 -2691.  1128. 12.9  -20.6
-#> 3 -1042.  1318. 19.8   21.9
-#> 4 -2072.  -869. -4.30 -25.9
-#> 5  3784.  2151. 25.9  -18.8
-#> 6 -2168.   919. 22.4  -19.3
+#>       V1     V2     V3     V4
+#>    <dbl>  <dbl>  <dbl>  <dbl>
+#> 1  1149. -1200. 13.9   -11.8 
+#> 2 -2711.  1149.  5.69  -11.2 
+#> 3 -1027.  1301.  5.81    9.58
+#> 4 -2064.  -879. -0.916 -22.7 
+#> 5  3803.  2096. 37.7   -27.4 
+#> 6 -2146.   897. 25.4   -14.3
 
 final_shap$expected_value
-#> [1] 4397.814
+#> [1] 4398.19
 ```
 
 As a check, you can see that the expected value for mSHAP is indeed the
@@ -146,7 +146,7 @@ expected value of the model across the training data.
 ``` r
 ## R
 mean(py$tot_rev)
-#> [1] 4397.814
+#> [1] 4398.19
 ```
 
 We now have calculated the mSHAP values for the multiplied model
@@ -183,9 +183,9 @@ observation_plot(
 For another, more complex, use case run `vignette("mshap")`. For more
 examples and options for plotting, run `vignette("mshap_plots")`.
 
-## Attribution
+## Citations
 
 -   For more information about SHAP values in general, you can visit the
     [SHAP github page](https://github.com/slundberg/shap)
--   If you use `{mshap}`, please cite [this
-    article](https://www.google.com/)
+-   If you use `{mshap}`, please cite [*mSHAP: SHAP Values for Two-Part
+    Models*](https://arxiv.org/abs/2106.08990)

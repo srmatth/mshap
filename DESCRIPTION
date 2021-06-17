@@ -7,8 +7,14 @@ Authors@R:
            role = c("aut", "cre"),
            email = "srmatthews98@gmail.com")
 Description: Allows for the computation of mSHAP values on
-    two-part models. Also contains functions for simple plotting of
-    the results (or any SHAP values).
+    two-part models as proposed  by Matthews, S. and Hartman, B. 
+    (2021) <arXiv:2106.08990>.
+    Also contains functions for simple plotting of
+    the results (or any SHAP values). For information about the
+    TreeSHAP algorithm that mSHAP builds on, see Lundberg, S.M.,
+    Erion, G., Chen, H., DeGrave, A., Prutkin, J.M., Nair, B., Katz,
+    R., Himmelfarb, J., Bansal, N., Lee, S.I. (2020)
+    <doi:10.1038/s42256-019-0138-9>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

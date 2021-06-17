@@ -170,8 +170,8 @@ observation_plot(
 For another, more complex, use case run `vignette("mshap")`.
 For more examples and options for plotting, run `vignette("mshap_plots")`.
 
-## Attribution
+## Citations
 
 - For more information about SHAP values in general, you can visit the [SHAP github page](https://github.com/slundberg/shap)
-- If you use `{mshap}`, please cite [this article](https://www.google.com/)
+- If you use `{mshap}`, please cite [*mSHAP: SHAP Values for Two-Part Models*](https://arxiv.org/abs/2106.08990)
 

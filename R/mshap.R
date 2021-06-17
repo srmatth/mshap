@@ -36,6 +36,8 @@
 #'   passed to `shap_*`.
 #' @export
 #' 
+#' @importFrom magrittr %>%
+#' 
 #' @examples 
 #' 
 #' if (interactive()) {

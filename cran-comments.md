@@ -1,3 +1,10 @@
+## Resubmission
+
+* Removed the `%>%` operator re-export from `{magrittr}` to resolve
+  potential documentation issues
+* Added two papers pertinent to the methods implemented in this package 
+  to the description field in the DESCRIPTION file
+
 ## Test Environments
 
 * local OSX install, R 4.0.0
