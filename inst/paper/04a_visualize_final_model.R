@@ -118,7 +118,11 @@ sev_shap <- read_csv(str_c(dat_dir, "pd_sev_shap_values_final_mod.csv")) %>%
   set_colnames(colnames(test))
 
 ## Visualize individual shap values
-summary_plot(variable_values = test, shap_values = sev_shap, title = "Severity SHAP Values")
+mshap::summary_plot(
+  variable_values = test, 
+  shap_values = sev_shap, 
+  title = "Severity SHAP Values"
+)
 observation_plot(
   variable_values = test[7,],
   shap_values = sev_shap[7,],
@@ -126,7 +130,11 @@ observation_plot(
   num_vars = 10
 )
 
-summary_plot(variable_values = test, shap_values = freq_shap[[1]], title = "Frequency SHAP Values (0 Claims)")
+summary_plot(
+  variable_values = test, 
+  shap_values = freq_shap[[1]], 
+  title = "Frequency SHAP Values (0 Claims)"
+)
 summary_plot(variable_values = test, shap_values = freq_shap[[2]], title = "Frequency SHAP Values (1 Claim)")
 summary_plot(variable_values = test, shap_values = freq_shap[[3]], title = "Frequency SHAP Values (2 Claims)")
 summary_plot(variable_values = test, shap_values = freq_shap[[4]], title = "Frequency SHAP Values (3 Claims)")

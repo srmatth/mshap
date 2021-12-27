@@ -199,6 +199,9 @@ summary_plot <- function(
       breaks = c(0.1, 0.9),
       labels = c("Low", "High")
     ) +
+    ggplot2::scale_x_continuous(
+      labels = function(x) sub('^-', '\U2212', scales::number(x, big.mark = ","))
+    ) +
     ggplot2::ggtitle(title) +
     ggplot2::labs(color = "Value of Variable") +
     ggplot2::theme(

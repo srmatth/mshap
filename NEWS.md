@@ -1,3 +1,9 @@
+# mshap 0.1.0.9001
+
+## Clean Up
+
+- Add formatting to the X and Y axis of the summary plot, also change the dash to an actual negative sign.
+
 # mshap 0.1.0.9000
 
 # mshap 0.1.0

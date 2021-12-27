@@ -2,8 +2,11 @@
 
 # This file will create the various plots used in the mSHAP paper
 
+library(tidyverse)
+library(stringr)
+
 ## Score Plots ----
-all_tests <- readr::read_csv("mSHAP/all_tests_results.csv")
+all_tests <- readr::read_csv("inst/paper/all_tests_results.csv")
 
 all_tests %>% 
   # filter(
@@ -73,7 +76,7 @@ all_tests %>%
     plot.subtitle = element_text(hjust = 0.5)
   )
 
-## Tiing Plots ----
+## Timing Plots ----
 all_times_2_vars <- readr::read_csv("inst/paper/all_times_2_vars.csv")
 
 all_times_2_vars %>%
@@ -87,11 +90,12 @@ all_times_2_vars %>%
   aes(x = smaple_size, y = time, color = method) +
   geom_line(lwd = 1.5) +
   theme_classic() +
-  scale_color_manual(values = c("#A54657", "#0D3B66")) +
+  scale_color_manual(values = c("#440154", "#29AF7F")) +
   xlab("Sample Size") +
   ylab("Time (seconds)") +
   ggtitle("Comparison of Time by Method", "Number of Variables Fixed at 2") +
   labs(color = "Method") +
+  scale_x_continuous(labels = scales::number_format(big.mark = ",", accuracy = 1)) +
   guides(color = guide_legend(nrow = 1, title.hjust = 0.5, title.position = "top")) +
   theme(
     legend.position = c(0.7, 0.3),
@@ -119,7 +123,7 @@ all_times_100_sample %>%
   theme_classic() +
   ylab("Time (seconds)") +
   xlab("Number of Variables")+
-  scale_color_manual(values = c("#A54657", "#0D3B66")) +
+  scale_color_manual(values = c("#440154", "#29AF7F")) +
   ggtitle("Comparison of Time by Method", "Sample Size Fixed at 100") +
   labs(color = "Method") +
   guides(color = guide_legend(nrow = 1, title.position = "top", title.hjust = 0.5)) +

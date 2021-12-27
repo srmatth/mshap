@@ -1,6 +1,6 @@
 Package: mshap
 Title: Multiplicative SHAP Values for Two-Part Models
-Version: 0.1.0.9000
+Version: 0.1.0.9001
 Authors@R: 
     person(given = "Spencer",
            family = "Matthews",
