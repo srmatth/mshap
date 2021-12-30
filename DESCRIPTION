@@ -29,7 +29,8 @@ Imports:
     ggbeeswarm,
     rlang,
     tidyr,
-    tidyselect
+    tidyselect,
+    scales
 Suggests: 
     rmarkdown,
     knitr,
